@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>• — editor de reglas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1><span class="logo">•</span> editor de reglas</h1>
+    <label class="ej">Ejemplo
+      <select id="exampleSelect"></select>
+    </label>
+    <button id="loadExample">Cargar</button>
+    <span class="spacer"></span>
+    <button id="exportBtn" title="Descargar reglas y mundo como JSON">Exportar</button>
+    <label class="btn" title="Cargar un JSON exportado">Importar<input type="file" id="importFile" accept=".json" hidden></label>
+  </header>
+
+  <main>
+    <section class="stage">
+      <div class="toolbar">
+        <button id="playBtn" class="primary">▶ Ejecutar</button>
+        <button id="stepBtn">Paso</button>
+        <button id="resetBtn" title="Volver al estado inicial guardado">⟲ Reiniciar</button>
+        <button id="setInitBtn" title="Guardar el estado actual como inicial">Fijar inicial</button>
+        <span class="sep"></span>
+        <label>Modo
+          <select id="modeSelect">
+            <option value="seq">Secuencial (1ª coincidencia)</option>
+            <option value="seq-rand">Secuencial (al azar)</option>
+            <option value="par-prio">Paralelo (gana la 1ª)</option>
+            <option value="par-skip">Paralelo (descarta conflictos)</option>
+            <option value="par-rand">Paralelo (prioridad al azar)</option>
+          </select>
+        </label>
+        <label>Pasos/fotograma <input type="range" id="speed" min="1" max="500" value="1"><output id="speedOut">1</output></label>
+        <label>Zoom <input type="range" id="zoom" min="2" max="32" value="10"></label>
+        <span class="sep"></span>
+        <label>Pincel
+          <select id="brush">
+            <option value="toggle">Alternar</option>
+            <option value="dot">Poner •</option>
+            <option value="erase">Borrar</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="showMatches"> Ver coincidencias</label>
+      </div>
+      <div class="stats" id="stats"></div>
+      <div class="canvasWrap" id="canvasWrap">
+        <canvas id="canvas"></canvas>
+      </div>
+      <p class="desc" id="exampleDesc"></p>
+    </section>
+
+    <aside>
+      <nav class="tabs">
+        <button data-tab="rules" class="active">Reglas</button>
+        <button data-tab="world">Mundo</button>
+        <button data-tab="help">Ayuda</button>
+      </nav>
+
+      <div class="tab" id="tab-rules">
+        <div class="row">
+          <button id="addRule">+ Nueva regla</button>
+          <span class="hint">Clic: cambia celda · Clic derecho: ancla ⚓</span>
+        </div>
+        <div id="rulesList"></div>
+      </div>
+
+      <div class="tab hidden" id="tab-world">
+        <h3>Grilla</h3>
+        <div class="row">
+          <label>Ancho <input type="number" id="worldW" min="4" max="1000"></label>
+          <label>Alto <input type="number" id="worldH" min="4" max="1000"></label>
+          <button id="applySize">Aplicar</button>
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="wrap"> Toroidal (los bordes se unen)</label>
+        </div>
+        <div class="row"><button id="clearBtn">Vaciar grilla</button></div>
+
+        <h3>Red</h3>
+        <p class="hint">Se dibuja como guía y es donde caen las reglas «ancladas».</p>
+        <div class="row">
+          <select id="latType">
+            <option value="none">Sin red</option>
+            <option value="rect">Rectangular</option>
+            <option value="diag">Diagonal (x + m·y) mod n = k</option>
+          </select>
+          <label><input type="checkbox" id="showLattice" checked> Mostrar</label>
+        </div>
+        <div class="row lat lat-rect">
+          <label>px <input type="number" id="latPx" min="1"></label>
+          <label>py <input type="number" id="latPy" min="1"></label>
+          <label>ox <input type="number" id="latOx"></label>
+          <label>oy <input type="number" id="latOy"></label>
+        </div>
+        <div class="row lat lat-diag">
+          <label>m <input type="number" id="latM"></label>
+          <label>n <input type="number" id="latN" min="1"></label>
+          <label>k <input type="number" id="latK"></label>
+        </div>
+
+        <h3>Mosaico</h3>
+        <p class="hint">Dibuja una pieza y repítela por toda la grilla (por ejemplo, los • de píxel de la hormiga).</p>
+        <div class="row">
+          <label>W <input type="number" id="tileW" min="1" max="16"></label>
+          <label>H <input type="number" id="tileH" min="1" max="16"></label>
+          <label>desplaz. x <input type="number" id="tileOx"></label>
+          <label>y <input type="number" id="tileOy"></label>
+        </div>
+        <div id="tileGrid" class="mini"></div>
+        <div class="row"><button id="fillTile">Rellenar grilla con el mosaico</button></div>
+      </div>
+
+      <div class="tab hidden" id="tab-help">
+        <h3>El lenguaje</h3>
+        <p>El mundo solo contiene <b>•</b> o vacío. Todo lo demás son reglas de la forma
+          <i>disposición de celdas ~&gt; disposición de celdas</i>.</p>
+        <h3>Editar una regla</h3>
+        <ul>
+          <li><b>Si</b> (izquierda): cada celda es <span class="k any"></span> cualquiera,
+            <span class="k dot">•</span> debe haber • o <span class="k emp">○</span> debe estar vacía.</li>
+          <li><b>Entonces</b> (derecha): <span class="k any"></span> no tocar, <span class="k dot">•</span> poner • o
+            <span class="k emp">○</span> vaciar.</li>
+          <li>La regla se busca en <b>cualquier posición</b>: no sabe dónde cae.</li>
+          <li><b>Simetría</b>: genera rotaciones y/o espejos de la regla automáticamente.</li>
+          <li><b>Anclada ⚓</b>: la celda ancla (clic derecho) solo puede caer sobre la red del mundo.
+            Es información externa a los •: úsala con conciencia.</li>
+        </ul>
+        <h3>Modos de paso</h3>
+        <ul>
+          <li><b>Secuencial</b>: en cada paso se aplica una sola coincidencia.</li>
+          <li><b>Paralelo</b>: todas a la vez, leyendo del estado anterior. Si dos escriben la misma celda hay
+            conflicto: gana la primera, se descartan ambas o decide el azar.</li>
+        </ul>
+        <h3>Contador de •</h3>
+        <p>Indica si el sistema conserva los •: compara el número actual con el del estado inicial.</p>
+      </div>
+    </aside>
+  </main>
+
+  <script src="engine.js"></script>
+  <script src="examples.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
