@@ -3,6 +3,9 @@
   "use strict";
   const P = typeof module !== "undefined" && module.exports ? require("./engine.js") : global.Punto;
   const { ANY, DOT, EMPTY } = P;
+  const SISTEMAS_MULTI = (typeof module !== "undefined" && module.exports ? (() => { try { return require("./sistemas_multi.js"); } catch (e) { return null; } })() : global.PuntoSistemasMulti) || null;
+  const SISTEMAS = (typeof module !== "undefined" && module.exports ? require("./sistemas.js") : global.PuntoSistemas) || null;
+  const GANADORES = (typeof module !== "undefined" && module.exports ? require("./ganadores.js") : global.PuntoGanadores) || [];
 
   /** Construye una regla a partir de una lista de celdas [x, y, lhs, rhs] con coordenadas libres. */
   function ruleFromCells(name, cells, opts = {}) {
@@ -76,6 +79,66 @@
     return rules;
   }
 
+  // ---------- Hormiga con grid y el mínimo de reglas: 8 reglas de 3 celdas sobre cruces ----------
+  // Cada regla lee el píxel (centro) y la hormiga (un brazo), invierte el píxel, borra la hormiga y la pone en el
+  // brazo del bloque vecino. No comprueba nada más: solo hay una hormiga en el mundo.
+  function reglasHormigaMinima() {
+    const rules = [];
+    for (const d of ["U", "L", "D", "R"])
+      for (const negro of [false, true]) {
+        const nd = negro ? DER[d] : IZQ[d];
+        const t = [MOVX[nd][0] + ARM[nd][0], MOVX[nd][1] + ARM[nd][1]];
+        rules.push(ruleFromCells(`${FLECHA[d]} sobre ${negro ? "negro" : "blanco"} → ${FLECHA[nd]}`, [
+          [0, 0, negro ? DOT : EMPTY, negro ? EMPTY : DOT],
+          [ARM[d][0], ARM[d][1], DOT, EMPTY],
+          [t[0], t[1], ANY, DOT],
+        ], { anchor: [0, 0], anchored: true }));
+      }
+    return rules;
+  }
+
+  // ---------- Hormigas separables sin anclaje (zona de píxel + zona de hormiga) ----------
+  // s = { w, h, za: celdas de la zona de hormiga, marca: celda de marca o null, Pw, Pb: píxel, codigos: hormiga ↑←↓→ }
+  // Sin marca: el bloque blanco sin hormiga es todo vacío, así que el mundo vacío ya es la red.
+  // Con marca: los bloques construidos llevan un • fijo y 4 reglas de crecimiento extienden la red; la hormiga
+  // solo avanza sobre bloques con marca.
+  const DIRS4 = ["U", "L", "D", "R"];
+  function reglasSeparables(s) {
+    const { w, h, za } = s, n = w * h, marca = s.marca;
+    const base = marca == null ? 0 : 1 << marca;
+    const N = [base | s.Pw, base | s.Pb];
+    const A = [0, 1].map(c => [0, 1, 2, 3].map(d => N[c] | s.codigos[d]));
+    const pos = k => [k % w, Math.floor(k / w)];
+    const vec = { U: [0, -h], D: [0, h], L: [-w, 0], R: [w, 0] };
+    const rules = [];
+    for (let d = 0; d < 4; d++)
+      for (const c of [0, 1]) {
+        const nd = c === 0 ? IZQ[DIRS4[d]] : DER[DIRS4[d]], ndi = DIRS4.indexOf(nd), [vx, vy] = vec[nd];
+        const cells = [];
+        for (let k = 0; k < n; k++) {
+          const [x, y] = pos(k), a = (A[c][d] >> k) & 1, b = (N[1 - c] >> k) & 1;
+          cells.push([x, y, a ? DOT : EMPTY, a === b ? ANY : (b ? DOT : EMPTY)]);
+        }
+        for (const k of za) {
+          const [x, y] = pos(k);
+          cells.push([vx + x, vy + y, EMPTY, (s.codigos[ndi] >> k) & 1 ? DOT : ANY]);
+        }
+        if (marca != null) { const [x, y] = pos(marca); cells.push([vx + x, vy + y, DOT, ANY]); }
+        rules.push(ruleFromCells(`${FLECHA[DIRS4[d]]} sobre ${c ? "negro" : "blanco"} → ${FLECHA[nd]}`, cells, { anchor: [0, 0] }));
+      }
+    if (marca != null)
+      for (const v of DIRS4) {
+        const [vx, vy] = vec[v], [mx, my] = pos(marca);
+        const cells = [[mx, my, DOT, ANY]];
+        for (let k = 0; k < n; k++) { const [x, y] = pos(k); cells.push([vx + x, vy + y, EMPTY, (N[0] >> k) & 1 ? DOT : ANY]); }
+        rules.push(ruleFromCells(`crecer ${FLECHA[v]}`, cells, { anchor: [mx, my] }));
+      }
+    return { rules, N, A, pos };
+  }
+  // Mejor solución de la variante «el vacío es la red» (busqueda/hormiga/sin_red2.py a): bloque 1×6,
+  // arriba el píxel (• = negro) y 5 celdas para el código de la hormiga.
+  const SIN_RED_A = { w: 1, h: 6, za: [1, 2, 3, 4, 5], marca: null, Pw: 0, Pb: 1, codigos: [10, 34, 38, 52] };
+
   function set(world, x, y) { world.cells[y * world.w + x] = 1; }
 
   const EXAMPLES = [
@@ -111,6 +174,36 @@
         let x = 100, y = 90;
         while ((x + 2 * y) % 5 !== 0) x++;
         set(world, x, y - 1); // hormiga en el brazo ↑
+      },
+    },
+    {
+      id: "hormigaMinima",
+      name: "Hormiga con grid y mínimo de reglas: 8 reglas de 3 celdas",
+      desc: "El mínimo contando cada variante como una regla: 8 (4 direcciones × 2 colores; ninguna regla puede cubrir dos casos). " +
+        "Cada regla mira solo 3 celdas: el píxel (centro de la cruz), la hormiga (un brazo) y el brazo de llegada del vecino. " +
+        "No hace falta comprobar los demás brazos: solo hay una hormiga. Ancladas a la red diagonal (x + 2y) mod 5 = 0.",
+      world: { w: 250, h: 200, wrap: false, lattice: { type: "diag", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
+      mode: "seq", cell: 4, speed: 200,
+      rules: reglasHormigaMinima,
+      init(world) {
+        let x = 100, y = 90;
+        while ((x + 2 * y) % 5 !== 0) x++;
+        set(world, x, y - 1);
+      },
+    },
+    {
+      id: "hormigaSinRed",
+      name: "Hormiga sin red: el mundo vacío ya es la red (8 reglas, sin anclaje)",
+      desc: "El mundo empieza completamente vacío y nada está anclado. Bloques 1×6: arriba el píxel (• = negro) y debajo un código " +
+        "de varios • para la hormiga, con una forma distinta para cada dirección. El bloque blanco sin hormiga es todo vacío, así que " +
+        "el vacío ya es una red blanca implícita y la hormiga va dejando la estructura al pasar. Con la hormiga como un único • es " +
+        "imposible: un • aislado en el vacío encaja igual en las 4 direcciones.",
+      world: { w: 120, h: 720, wrap: false, lattice: { type: "rect", px: 1, py: 6, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
+      mode: "seq", cell: 3, speed: 200,
+      rules: () => reglasSeparables(SIN_RED_A).rules,
+      init(world) {
+        const { A, pos } = reglasSeparables(SIN_RED_A);
+        for (let k = 0; k < 6; k++) { const [x, y] = pos(k); if ((A[0][0] >> k) & 1) set(world, 60 + x, 60 * 6 + y); }
       },
     },
     {
@@ -161,7 +254,103 @@
     },
   ];
 
-  const api = { EXAMPLES, ruleFromCells };
+  // ---------- Codificaciones autolocalizables (generadas por busqueda/) ----------
+  // Estados: s = 5·c + 0 (sin hormiga) o 5·c + 1 + d, con c 0 blanco / 1 negro y d 0 ↑, 1 ←, 2 ↓, 3 →.
+  const DIRS = ["U", "L", "D", "R"];
+  function vecBloque(g, d) {
+    return { U: [-g.D[0], -g.D[1]], D: g.D, L: [-g.R[0], -g.R[1]], R: g.R }[DIRS[d]];
+  }
+  function reglasBloques(g) {
+    const rules = [], p = g.pats, n = g.cells.length;
+    for (let d = 0; d < 4; d++)
+      for (const c of [0, 1]) {
+        const nd = c === 0 ? (d + 1) % 4 : (d + 3) % 4;
+        const v = vecBloque(g, nd);
+        for (const c2 of [0, 1]) {
+          const A = p[5 * c + 1 + d], B = p[5 * c2], A2 = p[5 * (1 - c)], B2 = p[5 * c2 + 1 + nd];
+          const cells = [];
+          const pon = (ox, oy, antes, despues) => {
+            for (let k = 0; k < n; k++) {
+              const a = (antes >> k) & 1, b = (despues >> k) & 1;
+              cells.push([ox + g.cells[k][0], oy + g.cells[k][1], a ? DOT : EMPTY, a === b ? ANY : (b ? DOT : EMPTY)]);
+            }
+          };
+          pon(0, 0, A, A2);
+          pon(v[0], v[1], B, B2);
+          rules.push(ruleFromCells(`${FLECHA[DIRS[d]]} sobre ${c ? "negro" : "blanco"}, destino ${c2 ? "negro" : "blanco"} → ${FLECHA[DIRS[nd]]}`,
+            cells, { anchor: g.cells[0] }));
+        }
+      }
+    return rules;
+  }
+  /** Pinta el estado s del bloque (a, b); las celdas fuera del mundo se ignoran. */
+  function pintaBloque(world, g, a, b, s) {
+    const X = g.origen[0] + a * g.R[0] + b * g.D[0], Y = g.origen[1] + a * g.R[1] + b * g.D[1];
+    g.cells.forEach(([x, y], k) => {
+      const i = P.cellIndex(world, X + x, Y + y);
+      if (i >= 0) world.cells[i] = (g.pats[s] >> k) & 1;
+    });
+  }
+  function initBloques(world, g) {
+    for (let a = 0; a < g.na; a++) for (let b = 0; b < g.nb; b++) pintaBloque(world, g, a, b, 0);
+    pintaBloque(world, g, g.a0, g.b0, 1); // hormiga ↑ sobre blanco
+  }
+  for (const g of GANADORES) {
+    const m = g.metricas;
+    EXAMPLES.push({
+      id: g.id, name: g.nombre,
+      desc: g.desc + ` [${g.forma}, ${m.n} celdas, densidad ${m.densidad}, ${m.celdas_cambian} celdas cambian en total en las 16 reglas]`,
+      world: { w: g.world.w, h: g.world.h, wrap: false, lattice: g.lattice },
+      mode: "seq", cell: 3, speed: 200,
+      rules: () => reglasBloques(g),
+      init(world) { initBloques(world, g); },
+      bloques: g,
+    });
+  }
+
+  // ---------- Sistemas de una regla clasificados por entropía (generados por busqueda/entropia/) ----------
+  if (SISTEMAS) {
+    for (const sis of SISTEMAS.sistemas) {
+      EXAMPLES.push({
+        id: sis.id, name: sis.nombre, desc: sis.desc,
+        world: { w: SISTEMAS.n, h: SISTEMAS.n, wrap: true, lattice: { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
+        mode: "par-skip", cell: 7, speed: 4,
+        rules() {
+          const r = P.newRule(3, 3, sis.nombre);
+          r.lhs = sis.lhs.slice(); r.rhs = sis.rhs.slice(); r.sym = sis.sym; r.anchor = [1, 1];
+          return [r];
+        },
+        init(world) {
+          const bits = SISTEMAS.iniciales[sis.init];
+          for (let i = 0; i < bits.length; i++) world.cells[i] = bits.charCodeAt(i) - 48;
+        },
+      });
+    }
+  }
+
+  // ---------- Sistemas de varias reglas por orden (productiva / consumidora / movedora) ----------
+  if (SISTEMAS_MULTI) {
+    for (const sis of SISTEMAS_MULTI.sistemas) {
+      EXAMPLES.push({
+        id: sis.id, name: sis.nombre, desc: sis.desc,
+        world: { w: SISTEMAS_MULTI.n, h: SISTEMAS_MULTI.n, wrap: true, lattice: { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
+        mode: "par-skip", cell: 7, speed: 4,
+        rules() {
+          return sis.reglas.map((x, j) => {
+            const r = P.newRule(3, 3, `Regla ${j + 1}`);
+            r.lhs = x.lhs.slice(); r.rhs = x.rhs.slice(); r.sym = x.sym; r.anchor = [1, 1];
+            return r;
+          });
+        },
+        init(world) {
+          const bits = SISTEMAS_MULTI.iniciales[sis.init];
+          for (let i = 0; i < bits.length; i++) world.cells[i] = bits.charCodeAt(i) - 48;
+        },
+      });
+    }
+  }
+
+  const api = { EXAMPLES, ruleFromCells, reglasHormigaMinima, reglasSeparables, SIN_RED_A, reglasBloques, pintaBloque, GANADORES };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else global.PuntoEjemplos = api;
 })(typeof window !== "undefined" ? window : globalThis);

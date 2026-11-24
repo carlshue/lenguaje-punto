@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "editor",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["C:/Users/carlo/OneDrive/Documentos/2d punto/servidor.py", "8765"],
+      "port": 8765
+    }
+  ]
+}

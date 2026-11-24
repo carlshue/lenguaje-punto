@@ -68,7 +68,11 @@
           cells.push({ dx, dy, l, r });
         }
       if (!cells.length) continue;
-      const key = cells.map(c => `${c.dx},${c.dy},${c.l},${c.r}`).sort().join(";");
+      // Sin anclaje, dos variantes iguales salvo desplazamiento son la misma regla (encajan en los mismos sitios):
+      // se normaliza la clave por traslación para no aplicarla dos veces (en par-skip chocaría consigo misma).
+      const kx = rule.anchored ? 0 : Math.min(...cells.map(c => c.dx));
+      const ky = rule.anchored ? 0 : Math.min(...cells.map(c => c.dy));
+      const key = cells.map(c => `${c.dx - kx},${c.dy - ky},${c.l},${c.r}`).sort().join(";");
       if (seen.has(key)) continue;
       seen.add(key);
       const req = cells.filter(c => c.l === DOT);

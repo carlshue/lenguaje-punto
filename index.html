@@ -9,10 +9,11 @@
 <body>
   <header>
     <h1><span class="logo">•</span> editor de reglas</h1>
-    <label class="ej">Ejemplo
-      <select id="exampleSelect"></select>
-    </label>
-    <button id="loadExample">Cargar</button>
+    <button id="prevEx" title="Anterior (←)">◀</button>
+    <select id="exampleSelect" title="Elegir autómata"></select>
+    <button id="nextEx" title="Siguiente (→)">▶</button>
+    <button id="favBtn" title="Marcar como favorito (F)">☆</button>
+    <label class="auto" title="Ejecutar automáticamente al cargar un autómata"><input type="checkbox" id="autoRun" checked> ejecutar al cargar</label>
     <span class="spacer"></span>
     <button id="exportBtn" title="Descargar reglas y mundo como JSON">Exportar</button>
     <label class="btn" title="Cargar un JSON exportado">Importar<input type="file" id="importFile" accept=".json" hidden></label>
@@ -35,7 +36,7 @@
             <option value="par-rand">Paralelo (prioridad al azar)</option>
           </select>
         </label>
-        <label>Pasos/fotograma <input type="range" id="speed" min="1" max="500" value="1"><output id="speedOut">1</output></label>
+        <label>Velocidad <input type="range" id="speed" min="0" max="100" value="50"><output id="speedOut">60/s</output></label>
         <label>Zoom <input type="range" id="zoom" min="2" max="32" value="10"></label>
         <span class="sep"></span>
         <label>Pincel
@@ -56,12 +57,19 @@
 
     <aside>
       <nav class="tabs">
-        <button data-tab="rules" class="active">Reglas</button>
+        <button data-tab="gallery" class="active">Galería</button>
+        <button data-tab="rules">Reglas</button>
         <button data-tab="world">Mundo</button>
         <button data-tab="help">Ayuda</button>
       </nav>
 
-      <div class="tab" id="tab-rules">
+      <div class="tab" id="tab-gallery">
+        <input type="search" id="galFilter" placeholder="Filtrar (p. ej. «alta → baja», «mancha», «busy»)…">
+        <p class="hint">← → para pasar de uno a otro · Espacio: ejecutar / pausar</p>
+        <div id="galList"></div>
+      </div>
+
+      <div class="tab hidden" id="tab-rules">
         <div class="row">
           <button id="addRule">+ Nueva regla</button>
           <span class="hint">Clic: cambia celda · Clic derecho: ancla ⚓</span>
@@ -143,6 +151,9 @@
   </main>
 
   <script src="engine.js"></script>
+  <script src="ganadores.js"></script>
+  <script src="sistemas.js"></script>
+  <script src="sistemas_multi.js"></script>
   <script src="examples.js"></script>
   <script src="app.js"></script>
 </body>

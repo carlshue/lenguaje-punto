@@ -21,11 +21,13 @@ Abre `index.html` en el navegador; no necesita instalar nada.
 - Gas de partículas (paseo aleatorio).
 - Arena con gravedad.
 - Triángulo de Sierpinski (regla 90).
+- Hormigas autolocalizables de 4, 5, 6 y 7 celdas: reglas sin anclaje que solo encajan en la posición real (generadas en `busqueda/`).
 
 ## Pruebas
 
 ```
 node test/test.js
+node test/autolocalizables.js
 ```
 
 Comprueban que las hormigas reproducen paso a paso la hormiga clásica (autopista incluida), que Sierpinski coincide con la regla 90 y que los ejemplos conservativos conservan los •.

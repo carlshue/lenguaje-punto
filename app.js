@@ -50,7 +50,7 @@
     ex.init.call(ex, w);
     S.world = w;
     S.rules = ex.rules();
-    S.mode = ex.mode; S.cell = ex.cell; S.speed = ex.speed;
+    S.mode = ex.mode; S.cell = ex.cell; S.speed = ex.speed; S.sps = (ex.speed || 1) * 60;
     if (ex.tile) S.tile = Object.assign({ ox: 0, oy: 0 }, JSON.parse(JSON.stringify(ex.tile)));
     S.exampleId = ex.id; S.desc = ex.desc;
     S.dirty = true;
@@ -67,17 +67,25 @@
     S.last = st;
     return st;
   }
-  function loop() {
+  // Velocidad en pasos por segundo (escala logarítmica de 0,5 a 20.000), con acumulador de tiempo
+  const spsDe = v => 0.5 * Math.pow(40000, v / 100);
+  const valorDe = sps => Math.round(100 * Math.log(Math.max(0.5, sps) / 0.5) / Math.log(40000));
+  const textoSps = sps => (sps < 10 ? sps.toFixed(1).replace(".0", "") : Math.round(sps)) + "/s";
+  let ultimoT = 0, deuda = 0;
+  function loop(t) {
     if (!S.running) return;
-    let st;
-    for (let i = 0; i < S.speed; i++) {
-      st = doStep();
+    if (!ultimoT) ultimoT = t;
+    deuda = Math.min(deuda + (t - ultimoT) / 1000 * S.sps, Math.max(1, S.sps / 10));
+    ultimoT = t;
+    let st, hechos = 0;
+    while (deuda >= 1 && hechos < 5000) {
+      st = doStep(); deuda -= 1; hechos++;
       if (!st.applied) { stop(); S.last = st; break; }
     }
-    draw(); updateStats();
+    if (hechos) { draw(); updateStats(); }
     if (S.running) requestAnimationFrame(loop);
   }
-  function start() { if (S.running) return; S.running = true; $("playBtn").textContent = "⏸ Pausa"; requestAnimationFrame(loop); }
+  function start() { if (S.running) return; S.running = true; ultimoT = 0; deuda = 1; $("playBtn").textContent = "⏸ Pausa"; requestAnimationFrame(loop); }
   function stop() { S.running = false; $("playBtn").textContent = "▶ Ejecutar"; save(); }
 
   // ---------- Dibujo ----------
@@ -282,7 +290,7 @@
 
   function syncAll() {
     $("modeSelect").value = S.mode;
-    $("speed").value = S.speed; $("speedOut").textContent = S.speed;
+    $("speed").value = valorDe(S.sps); $("speedOut").textContent = textoSps(S.sps);
     $("zoom").value = S.cell;
     $("exampleSelect").value = S.exampleId || "";
     $("exampleDesc").textContent = S.desc || "";
@@ -299,7 +307,7 @@
     return {
       formato: "punto-1",
       world: { w: S.world.w, h: S.world.h, wrap: S.world.wrap, lattice: S.world.lattice, dots },
-      initial: init, rules: S.rules, mode: S.mode, cell: S.cell, speed: S.speed, tile: S.tile,
+      initial: init, rules: S.rules, mode: S.mode, cell: S.cell, speed: S.speed, sps: S.sps, tile: S.tile,
       exampleId: S.exampleId, desc: S.desc, stepCount: S.stepCount,
     };
   }
@@ -310,7 +318,7 @@
     S.world = w;
     S.initial = new Uint8Array(w.w * w.h); for (const i of d.initial || []) S.initial[i] = 1;
     S.initialDots = (d.initial || []).length;
-    S.rules = d.rules || []; S.mode = d.mode || "par-prio"; S.cell = d.cell || 10; S.speed = d.speed || 1;
+    S.rules = d.rules || []; S.mode = d.mode || "par-prio"; S.cell = d.cell || 10; S.speed = d.speed || 1; S.sps = d.sps || S.speed * 60;
     if (d.tile) S.tile = d.tile;
     S.exampleId = d.exampleId || null; S.desc = d.desc || ""; S.stepCount = d.stepCount || 0;
     S.dirty = true; S.last = null;
@@ -322,14 +330,111 @@
   }
 
   // ---------- Eventos ----------
-  EXAMPLES.forEach(e => { const o = document.createElement("option"); o.value = e.id; o.textContent = e.name; $("exampleSelect").appendChild(o); });
-  $("loadExample").onclick = () => loadExample($("exampleSelect").value);
+  // ---------- Galería: navegación rápida entre autómatas ----------
+  function categoria(e) {
+    if (/^(hormiga|auto)/.test(e.id)) return "Hormigas";
+    if (/^ent-/.test(e.id)) return "Entropía · una regla";
+    if (/^bb-/.test(e.id)) return "Busy beaver";
+    if (/^multi-/.test(e.id)) return "Órdenes · varias reglas";
+    return "Clásicos";
+  }
+  // Favoritos: instantáneas completas (reglas + mundo inicial + modo), guardadas en favoritos.json vía el servidor
+  // local (para poder estudiarlas después) o, si no hay servidor, en el navegador.
+  let FAVS = [];
+  const claveReglas = rules => JSON.stringify(rules.map(r => [r.w, r.h, r.lhs, r.rhs, r.sym, !!r.anchored]));
+  const claveEj = e => e._clave || (e._clave = (e.fav ? e.fav.clave : claveReglas(e.rules()) + "|" + e.world.w + "x" + e.world.h));
+  function favAEjemplo(f) {
+    return { id: "fav-" + f.fid, name: "★ " + f.nombre, desc: f.estado.desc, fav: f, world: f.estado.world };
+  }
+  function esFav(e) { const k = claveEj(e); return FAVS.some(f => f.clave === k); }
+  async function cargarFavs() {
+    try { const r = await fetch("api/favoritos", { cache: "no-store" }); if (r.ok) { FAVS = await r.json(); return; } } catch (e) { /* sin servidor */ }
+    try { FAVS = JSON.parse(localStorage.getItem(STORE + ":favs") || "[]"); } catch (e) { FAVS = []; }
+  }
+  async function guardarFavs() {
+    try { localStorage.setItem(STORE + ":favs", JSON.stringify(FAVS)); } catch (e) { /* nada */ }
+    try { await fetch("api/favoritos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(FAVS, null, 1) }); } catch (e) { /* sin servidor */ }
+  }
+  function alternarFav() {
+    // La clave sale de lo que hay en pantalla: si se editaron las reglas, es otro sistema
+    const actual = [...EXAMPLES, ...FAVS.map(favAEjemplo)].find(e => e.id === S.exampleId);
+    const k = claveReglas(S.rules) + "|" + S.world.w + "x" + S.world.h;
+    const editado = actual && claveEj(actual) !== k;
+    const i = FAVS.findIndex(f => f.clave === k);
+    if (i >= 0) FAVS.splice(i, 1);
+    else {
+      const est = serialize();
+      est.world.dots = est.initial.slice(); est.stepCount = 0;            // se guarda desde el estado inicial
+      const nombre = (actual ? actual.name.replace(/^★ /, "") : "Mi sistema") + (editado ? " (editado)" : "");
+      FAVS.push({ fid: Date.now().toString(36), nombre, fecha: new Date().toISOString(), origen: S.exampleId, clave: k, estado: est });
+    }
+    guardarFavs(); renderGaleria();
+  }
+  const CATS = ["★ Favoritos", "Hormigas", "Clásicos", "Entropía · una regla", "Busy beaver", "Órdenes · varias reglas"];
+  const porCat = c => c === "★ Favoritos" ? FAVS.map(favAEjemplo) : EXAMPLES.filter(e => categoria(e) === c);
+  for (const c of CATS.slice(1)) {
+    const L = porCat(c); if (!L.length) continue;
+    const g = document.createElement("optgroup"); g.label = `${c} (${L.length})`;
+    L.forEach(e => { const o = document.createElement("option"); o.value = e.id; o.textContent = e.name; g.appendChild(o); });
+    $("exampleSelect").appendChild(g);
+  }
+  let autoRun = true;
+  try { autoRun = localStorage.getItem(STORE + ":auto") !== "0"; } catch (e) { /* sin almacenamiento */ }
+  $("autoRun").checked = autoRun;
+  $("autoRun").onchange = e => { autoRun = e.target.checked; try { localStorage.setItem(STORE + ":auto", autoRun ? "1" : "0"); } catch (err) { /* nada */ } };
+  function visibles() {
+    const q = ($("galFilter").value || "").trim().toLowerCase();
+    const orden = CATS.flatMap(porCat);
+    return q ? orden.filter(e => (e.name + " " + categoria(e) + " " + (e.desc || "")).toLowerCase().includes(q)) : orden;
+  }
+  function abrir(id) {
+    const f = FAVS.find(x => "fav-" + x.fid === id);
+    if (f) {
+      stop(); deserialize(JSON.parse(JSON.stringify(f.estado))); S.exampleId = id; snapshotInitial(); syncAll(); save();
+    } else loadExample(id);
+    renderGaleria();
+    if (autoRun) start();
+  }
+  function mover(d) {
+    const L = visibles(); if (!L.length) return;
+    const i = L.findIndex(e => e.id === S.exampleId);
+    const j = i < 0 ? (d > 0 ? 0 : L.length - 1) : (i + d + L.length) % L.length;
+    abrir(L[j].id);
+  }
+  function renderGaleria() {
+    const el = $("galList"); el.innerHTML = "";
+    const L = visibles(); let cat = null;
+    for (const e of L) {
+      const c = e.fav ? "★ Favoritos" : categoria(e);
+      if (c !== cat) { cat = c; const h = document.createElement("h4"); h.textContent = c; el.appendChild(h); }
+      const fila = document.createElement("div"); fila.className = "galRow";
+      const st = document.createElement("button"); st.className = "galStar";
+      const on = esFav(e); st.textContent = on ? "★" : "☆"; st.title = on ? "Quitar de favoritos" : "Marcar como favorito";
+      st.onclick = ev => { ev.stopPropagation(); if (S.exampleId !== e.id) abrir(e.id); alternarFav(); };
+      const b = document.createElement("button");
+      b.className = "galItem" + (e.id === S.exampleId ? " active" : "");
+      b.textContent = e.name.replace(/^(★ )?(Entropía|Busy beaver|Órdenes) · /, "$1");
+      b.title = e.desc || e.name;
+      b.onclick = () => abrir(e.id);
+      fila.appendChild(st); fila.appendChild(b); el.appendChild(fila);
+    }
+    if (!L.length) el.innerHTML = '<p class="hint">Nada coincide con el filtro.</p>';
+    const act = el.querySelector(".active"); if (act) act.scrollIntoView({ block: "nearest" });
+    const actual = [...EXAMPLES, ...FAVS.map(favAEjemplo)].find(x => x.id === S.exampleId);
+    const kAct = claveReglas(S.rules) + "|" + S.world.w + "x" + S.world.h;
+    $("favBtn").textContent = FAVS.some(f => f.clave === kAct) ? "★" : "☆";
+  }
+  $("galFilter").oninput = renderGaleria;
+  $("exampleSelect").onchange = e => { abrir(e.target.value); e.target.blur(); };
+  $("favBtn").onclick = alternarFav;
+  $("prevEx").onclick = () => mover(-1);
+  $("nextEx").onclick = () => mover(1);
   $("playBtn").onclick = () => S.running ? stop() : start();
   $("stepBtn").onclick = () => { stop(); doStep(); draw(); updateStats(); save(); };
   $("resetBtn").onclick = () => { stop(); if (S.initial) S.world.cells.set(S.initial); S.stepCount = 0; S.last = null; draw(); updateStats(); save(); };
   $("setInitBtn").onclick = () => { snapshotInitial(); updateStats(); save(); };
   $("modeSelect").onchange = e => { S.mode = e.target.value; save(); };
-  $("speed").oninput = e => { S.speed = +e.target.value; $("speedOut").textContent = S.speed; save(); };
+  $("speed").oninput = e => { S.sps = spsDe(+e.target.value); $("speedOut").textContent = textoSps(S.sps); save(); };
   $("zoom").oninput = e => { S.cell = +e.target.value; resizeCanvas(); draw(); save(); };
   $("showMatches").onchange = e => { S.showMatches = e.target.checked; draw(); };
   $("addRule").onclick = () => { S.rules.push(P.newRule(3, 3, `Regla ${S.rules.length + 1}`)); markRules(); renderRules(); updateStats(); };
@@ -366,9 +471,12 @@
     e.target.value = "";
   };
   document.addEventListener("keydown", e => {
-    if (e.target.matches("input, select, textarea")) return;
+    if (e.target instanceof Element && e.target.matches("input, select, textarea")) return;
     if (e.code === "Space") { e.preventDefault(); S.running ? stop() : start(); }
     if (e.key === "n" || e.key === "N") $("stepBtn").click();
+    if (e.key === "f" || e.key === "F") alternarFav();
+    if (e.key === "ArrowRight") { e.preventDefault(); mover(1); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); mover(-1); }
   });
 
   // ---------- Arranque ----------
@@ -378,4 +486,6 @@
     if (raw) { deserialize(JSON.parse(raw)); restored = true; }
   } catch (e) { restored = false; }
   if (restored) syncAll(); else loadExample("hormiga6");
+  renderGaleria();
+  cargarFavs().then(renderGaleria);
 })();

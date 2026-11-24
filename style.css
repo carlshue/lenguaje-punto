@@ -65,3 +65,17 @@ h3:first-child { margin-top: 0; }
   main { flex-direction: column; }
   aside { width: auto; border-left: 0; border-top: 1px solid var(--line); max-height: 50vh; }
 }
+
+/* Galería */
+header select#exampleSelect { max-width: 46vw; }
+header .auto { font-size: 12px; color: var(--mute); display: flex; align-items: center; gap: 4px; }
+#tab-gallery #galFilter { width: 100%; box-sizing: border-box; padding: 6px 8px; margin-bottom: 4px; }
+#galList h4 { margin: 12px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--mute); }
+#galList .galItem { display: block; width: 100%; text-align: left; margin: 0 0 2px; padding: 5px 8px; font-size: 12.5px;
+  border: 1px solid transparent; background: transparent; border-radius: 6px; cursor: pointer; }
+#galList .galItem:hover { background: rgba(47, 91, 211, .07); }
+#galList .galItem.active { background: rgba(47, 91, 211, .13); border-color: rgba(47, 91, 211, .35); font-weight: 600; }
+#galList .galRow { display: flex; align-items: center; gap: 2px; }
+#galList .galStar { flex: none; width: 26px; border: 0; background: transparent; cursor: pointer; font-size: 15px; color: #c98500; padding: 2px; }
+#galList .galRow .galItem { flex: 1; }
+header #favBtn { font-size: 16px; color: #c98500; }

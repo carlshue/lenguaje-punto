@@ -1,0 +1,5 @@
+*.sqlite
+_*.json
+__pycache__/
+figs/
+multi.sqlite*

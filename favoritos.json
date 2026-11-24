@@ -1,0 +1,2182 @@
+[
+ {
+  "fid": "mwv8xtap",
+  "nombre": "Órdenes · P+C+M · sim · un • · baja → baja · sigue activo (6 reglas)",
+  "fecha": "2026-11-24T22:08:30.865Z",
+  "origen": "multi-88",
+  "clave": "[[3,3,[1,1,0,0,0,0,0,0,2],[1,0,0,0,0,2,0,1,0],\"mirrorv\",false],[3,3,[1,0,1,1,1,0,2,0,0],[2,0,0,1,2,2,1,0,0],\"all\",false],[3,3,[0,0,0,0,2,2,0,1,0],[0,2,0,0,1,0,0,0,0],\"rot\",false],[3,3,[1,0,0,0,0,0,1,0,2],[0,0,0,2,2,0,1,0,2],\"mirrorv\",false],[3,3,[1,0,0,0,1,1,1,2,1],[0,1,0,1,2,0,0,2,2],\"all\",false],[3,3,[1,2,0,1,1,1,0,2,0],[1,0,1,1,1,1,0,1,0],\"mirror\",false]]|64x64",
+  "estado": {
+   "formato": "punto-1",
+   "world": {
+    "w": 64,
+    "h": 64,
+    "wrap": true,
+    "lattice": {
+     "type": "none",
+     "px": 3,
+     "py": 2,
+     "ox": 0,
+     "oy": 0,
+     "m": 2,
+     "n": 5,
+     "k": 0
+    },
+    "dots": [
+     2080
+    ]
+   },
+   "initial": [
+    2080
+   ],
+   "rules": [
+    {
+     "name": "Regla 1",
+     "enabled": true,
+     "sym": "mirrorv",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2
+     ],
+     "rhs": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "name": "Regla 2",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      2,
+      0,
+      0
+     ],
+     "rhs": [
+      2,
+      0,
+      0,
+      1,
+      2,
+      2,
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 3",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      0,
+      0,
+      0,
+      2,
+      2,
+      0,
+      1,
+      0
+     ],
+     "rhs": [
+      0,
+      2,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 4",
+     "enabled": true,
+     "sym": "mirrorv",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      2
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      2,
+      2,
+      0,
+      1,
+      0,
+      2
+     ]
+    },
+    {
+     "name": "Regla 5",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      2,
+      1
+     ],
+     "rhs": [
+      0,
+      1,
+      0,
+      1,
+      2,
+      0,
+      0,
+      2,
+      2
+     ]
+    },
+    {
+     "name": "Regla 6",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      2,
+      0,
+      1,
+      1,
+      1,
+      0,
+      2,
+      0
+     ],
+     "rhs": [
+      1,
+      0,
+      1,
+      1,
+      1,
+      1,
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "mode": "par-skip",
+   "cell": 7,
+   "speed": 4,
+   "sps": 240,
+   "tile": {
+    "ox": 0,
+    "oy": 0,
+    "w": 3,
+    "h": 2,
+    "cells": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "exampleId": "multi-88",
+   "desc": "6 reglas 3×3 (1 productivas, 3 consumidoras, 2 movedoras), con simetría; módulo total 8, carga total 32, balance literal -4 y real -1. Modo par-skip, toro 64×64, empezando desde un •. Entropía H3: 0.00 → 0.02 (paso 8) → 0.07 (32) → 0.15 (128). Final: sigue activo. Otras condiciones: sopa alta → alta, mancha baja → media, punto baja → baja.",
+   "stepCount": 0
+  }
+ },
+ {
+  "fid": "mwv8xwgs",
+  "nombre": "Órdenes · P+C+M · sim · un • · baja → alta · se congela (7 reglas)",
+  "fecha": "2026-11-24T22:08:34.972Z",
+  "origen": "multi-86",
+  "clave": "[[3,3,[0,0,1,0,0,0,0,0,2],[0,0,0,0,0,0,0,1,0],\"all\",false],[3,3,[0,1,0,0,1,2,0,1,0],[1,0,1,0,1,1,1,0,0],\"mirror\",false],[3,3,[0,0,1,0,0,0,0,1,0],[0,2,0,0,0,0,0,0,2],\"mirrorv\",false],[3,3,[1,1,0,0,2,1,0,1,2],[1,1,0,2,0,1,0,1,1],\"mirror\",false],[3,3,[0,1,2,1,1,1,2,0,0],[0,0,2,0,0,2,1,0,0],\"all\",false],[3,3,[1,0,0,1,2,0,2,1,1],[1,0,2,2,2,1,1,0,2],\"mirror\",false],[3,3,[1,1,0,0,2,0,2,2,1],[1,1,0,2,0,0,2,0,1],\"all\",false]]|64x64",
+  "estado": {
+   "formato": "punto-1",
+   "world": {
+    "w": 64,
+    "h": 64,
+    "wrap": true,
+    "lattice": {
+     "type": "none",
+     "px": 3,
+     "py": 2,
+     "ox": 0,
+     "oy": 0,
+     "m": 2,
+     "n": 5,
+     "k": 0
+    },
+    "dots": [
+     2080
+    ]
+   },
+   "initial": [
+    2080
+   ],
+   "rules": [
+    {
+     "name": "Regla 1",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "name": "Regla 2",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      1,
+      0,
+      0,
+      1,
+      2,
+      0,
+      1,
+      0
+     ],
+     "rhs": [
+      1,
+      0,
+      1,
+      0,
+      1,
+      1,
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 3",
+     "enabled": true,
+     "sym": "mirrorv",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+     ],
+     "rhs": [
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2
+     ]
+    },
+    {
+     "name": "Regla 4",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      1,
+      0,
+      0,
+      2,
+      1,
+      0,
+      1,
+      2
+     ],
+     "rhs": [
+      1,
+      1,
+      0,
+      2,
+      0,
+      1,
+      0,
+      1,
+      1
+     ]
+    },
+    {
+     "name": "Regla 5",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      2,
+      0,
+      0,
+      2,
+      1,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 6",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      0,
+      1,
+      2,
+      0,
+      2,
+      1,
+      1
+     ],
+     "rhs": [
+      1,
+      0,
+      2,
+      2,
+      2,
+      1,
+      1,
+      0,
+      2
+     ]
+    },
+    {
+     "name": "Regla 7",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      1,
+      0,
+      0,
+      2,
+      0,
+      2,
+      2,
+      1
+     ],
+     "rhs": [
+      1,
+      1,
+      0,
+      2,
+      0,
+      0,
+      2,
+      0,
+      1
+     ]
+    }
+   ],
+   "mode": "par-skip",
+   "cell": 7,
+   "speed": 4,
+   "sps": 240,
+   "tile": {
+    "ox": 0,
+    "oy": 0,
+    "w": 3,
+    "h": 2,
+    "cells": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "exampleId": "multi-86",
+   "desc": "7 reglas 3×3 (2 productivas, 3 consumidoras, 2 movedoras), con simetría; módulo total 9, carga total 39, balance literal -3 y real +1. Modo par-skip, toro 64×64, empezando desde un •. Entropía H3: 0.00 → 0.28 (paso 8) → 0.90 (32) → 0.90 (128). Final: se congela. Otras condiciones: sopa alta → alta, mancha baja → alta, punto baja → alta.",
+   "stepCount": 0
+  }
+ },
+ {
+  "fid": "mwv8yspt",
+  "nombre": "Órdenes · P+C+M · sim · mancha · baja → media · sigue activo (6 reglas)",
+  "fecha": "2026-11-24T22:09:16.769Z",
+  "origen": "multi-84",
+  "clave": "[[3,3,[1,0,2,0,0,2,2,0,0],[1,1,0,0,0,1,0,0,2],\"mirror\",false],[3,3,[0,0,1,2,0,0,2,1,0],[0,0,0,1,0,1,1,1,1],\"all\",false],[3,3,[2,2,1,0,0,2,1,2,0],[1,2,2,0,0,2,0,1,0],\"rot\",false],[3,3,[2,0,0,2,1,2,0,0,0],[0,0,0,2,0,2,2,0,0],\"mirrorv\",false],[3,3,[1,0,0,0,1,0,0,0,0],[0,0,0,0,2,0,0,0,0],\"mirror\",false],[3,3,[0,1,0,0,0,0,0,2,0],[0,0,0,0,0,0,0,1,0],\"all\",false]]|64x64",
+  "estado": {
+   "formato": "punto-1",
+   "world": {
+    "w": 64,
+    "h": 64,
+    "wrap": true,
+    "lattice": {
+     "type": "none",
+     "px": 3,
+     "py": 2,
+     "ox": 0,
+     "oy": 0,
+     "m": 2,
+     "n": 5,
+     "k": 0
+    },
+    "dots": [
+     1820,
+     1821,
+     1822,
+     1825,
+     1827,
+     1884,
+     1887,
+     1888,
+     1948,
+     1950,
+     1953,
+     1954,
+     2012,
+     2014,
+     2019,
+     2077,
+     2078,
+     2080,
+     2081,
+     2140,
+     2143,
+     2144,
+     2145,
+     2146,
+     2207,
+     2269,
+     2271,
+     2272,
+     2273,
+     2275
+    ]
+   },
+   "initial": [
+    1820,
+    1821,
+    1822,
+    1825,
+    1827,
+    1884,
+    1887,
+    1888,
+    1948,
+    1950,
+    1953,
+    1954,
+    2012,
+    2014,
+    2019,
+    2077,
+    2078,
+    2080,
+    2081,
+    2140,
+    2143,
+    2144,
+    2145,
+    2146,
+    2207,
+    2269,
+    2271,
+    2272,
+    2273,
+    2275
+   ],
+   "rules": [
+    {
+     "name": "Regla 1",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      2,
+      0,
+      0,
+      2,
+      2,
+      0,
+      0
+     ],
+     "rhs": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      2
+     ]
+    },
+    {
+     "name": "Regla 2",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      0,
+      1,
+      2,
+      0,
+      0,
+      2,
+      1,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      1,
+      1,
+      1
+     ]
+    },
+    {
+     "name": "Regla 3",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      2,
+      2,
+      1,
+      0,
+      0,
+      2,
+      1,
+      2,
+      0
+     ],
+     "rhs": [
+      1,
+      2,
+      2,
+      0,
+      0,
+      2,
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "name": "Regla 4",
+     "enabled": true,
+     "sym": "mirrorv",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      2,
+      0,
+      0,
+      2,
+      1,
+      2,
+      0,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      2,
+      0,
+      2,
+      2,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 5",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 6",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "mode": "par-skip",
+   "cell": 7,
+   "speed": 4,
+   "sps": 240,
+   "tile": {
+    "ox": 0,
+    "oy": 0,
+    "w": 3,
+    "h": 2,
+    "cells": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "exampleId": "multi-84",
+   "desc": "6 reglas 3×3 (2 productivas, 2 consumidoras, 2 movedoras), con simetría; módulo total 8, carga total 20, balance literal +2 y real +4. Modo par-skip, toro 64×64, empezando desde mancha. Entropía H3: 0.03 → 0.23 (paso 8) → 0.49 (32) → 0.52 (128). Final: sigue activo. Otras condiciones: sopa alta → alta, mancha baja → media, punto baja → media.",
+   "stepCount": 0
+  }
+ },
+ {
+  "fid": "mwv90p3j",
+  "nombre": "Órdenes · P+C · sim · un • · baja → media · se congela (2 reglas)",
+  "fecha": "2026-11-24T22:10:45.391Z",
+  "origen": "multi-57",
+  "clave": "[[3,3,[1,0,2,2,0,2,0,1,1],[0,1,1,2,0,0,0,0,2],\"rot\",false],[3,3,[1,0,2,2,0,2,0,0,0],[0,0,1,0,2,0,0,1,0],\"rot\",false]]|64x64",
+  "estado": {
+   "formato": "punto-1",
+   "world": {
+    "w": 64,
+    "h": 64,
+    "wrap": true,
+    "lattice": {
+     "type": "none",
+     "px": 3,
+     "py": 2,
+     "ox": 0,
+     "oy": 0,
+     "m": 2,
+     "n": 5,
+     "k": 0
+    },
+    "dots": [
+     2080
+    ]
+   },
+   "initial": [
+    2080
+   ],
+   "rules": [
+    {
+     "name": "Regla 1",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      2,
+      2,
+      0,
+      2,
+      0,
+      1,
+      1
+     ],
+     "rhs": [
+      0,
+      1,
+      1,
+      2,
+      0,
+      0,
+      0,
+      0,
+      2
+     ]
+    },
+    {
+     "name": "Regla 2",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      2,
+      2,
+      0,
+      2,
+      0,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      1,
+      0,
+      2,
+      0,
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "mode": "par-skip",
+   "cell": 7,
+   "speed": 4,
+   "sps": 240,
+   "tile": {
+    "ox": 0,
+    "oy": 0,
+    "w": 3,
+    "h": 2,
+    "cells": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "exampleId": "multi-57",
+   "desc": "2 reglas 3×3 (1 productivas, 1 consumidoras, 0 movedoras), con simetría; módulo total 2, carga total 8, balance literal +0 y real +1. Modo par-skip, toro 64×64, empezando desde un •. Entropía H3: 0.00 → 0.14 (paso 8) → 0.44 (32) → 0.47 (128). Final: se congela. Otras condiciones: sopa alta → alta, mancha baja → media, punto baja → media.",
+   "stepCount": 0
+  }
+ },
+ {
+  "fid": "mwv92atf",
+  "nombre": "Órdenes · C+M · sim · un • · baja → media · sigue activo (3 reglas)",
+  "fecha": "2026-11-24T22:12:00.195Z",
+  "origen": "multi-27",
+  "clave": "[[3,3,[1,0,0,0,0,0,1,0,0],[0,0,0,2,0,0,2,0,0],\"mirror\",false],[3,3,[2,0,0,0,1,0,0,0,2],[0,0,0,0,0,0,0,0,1],\"rot\",false],[3,3,[1,0,0,1,0,1,1,0,2],[1,0,1,0,0,1,2,2,2],\"mirrorv\",false]]|64x64",
+  "estado": {
+   "formato": "punto-1",
+   "world": {
+    "w": 64,
+    "h": 64,
+    "wrap": true,
+    "lattice": {
+     "type": "none",
+     "px": 3,
+     "py": 2,
+     "ox": 0,
+     "oy": 0,
+     "m": 2,
+     "n": 5,
+     "k": 0
+    },
+    "dots": [
+     2080
+    ]
+   },
+   "initial": [
+    2080
+   ],
+   "rules": [
+    {
+     "name": "Regla 1",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      2,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 2",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      2,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      2
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+     ]
+    },
+    {
+     "name": "Regla 3",
+     "enabled": true,
+     "sym": "mirrorv",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      0,
+      1,
+      0,
+      1,
+      1,
+      0,
+      2
+     ],
+     "rhs": [
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      2,
+      2,
+      2
+     ]
+    }
+   ],
+   "mode": "par-skip",
+   "cell": 7,
+   "speed": 4,
+   "sps": 240,
+   "tile": {
+    "ox": 0,
+    "oy": 0,
+    "w": 3,
+    "h": 2,
+    "cells": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "exampleId": "multi-27",
+   "desc": "3 reglas 3×3 (0 productivas, 2 consumidoras, 1 movedoras), con simetría; módulo total 3, carga total 11, balance literal -3 y real -1. Modo par-skip, toro 64×64, empezando desde un •. Entropía H3: 0.00 → 0.03 (paso 8) → 0.29 (32) → 0.60 (128). Final: sigue activo. Otras condiciones: sopa alta → alta, mancha baja → alta, punto baja → media.",
+   "stepCount": 0
+  }
+ },
+ {
+  "fid": "mwv92dif",
+  "nombre": "Órdenes · C+M · sim · un • · baja → media · sigue activo (8 reglas)",
+  "fecha": "2026-11-24T22:12:03.687Z",
+  "origen": "multi-28",
+  "clave": "[[3,3,[1,1,2,1,0,0,1,1,0],[1,1,2,0,0,0,2,1,0],\"mirrorv\",false],[3,3,[0,0,0,2,0,0,0,1,0],[0,0,0,1,0,0,0,0,0],\"mirror\",false],[3,3,[1,0,2,1,0,1,1,0,1],[1,1,0,0,0,1,1,0,1],\"all\",false],[3,3,[0,2,0,0,0,2,1,0,0],[0,1,0,0,0,2,2,2,0],\"mirrorv\",false],[3,3,[2,1,0,0,0,0,2,0,1],[2,0,0,0,0,0,1,0,1],\"mirror\",false],[3,3,[0,1,0,0,0,0,0,1,0],[0,2,0,0,0,0,0,1,0],\"mirror\",false],[3,3,[0,0,0,2,0,0,1,0,0],[2,0,0,1,0,0,0,0,0],\"all\",false],[3,3,[0,2,1,0,0,0,1,2,0],[1,0,0,0,0,2,0,2,2],\"rot\",false]]|64x64",
+  "estado": {
+   "formato": "punto-1",
+   "world": {
+    "w": 64,
+    "h": 64,
+    "wrap": true,
+    "lattice": {
+     "type": "none",
+     "px": 3,
+     "py": 2,
+     "ox": 0,
+     "oy": 0,
+     "m": 2,
+     "n": 5,
+     "k": 0
+    },
+    "dots": [
+     2080
+    ]
+   },
+   "initial": [
+    2080
+   ],
+   "rules": [
+    {
+     "name": "Regla 1",
+     "enabled": true,
+     "sym": "mirrorv",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      1,
+      2,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0
+     ],
+     "rhs": [
+      1,
+      1,
+      2,
+      0,
+      0,
+      0,
+      2,
+      1,
+      0
+     ]
+    },
+    {
+     "name": "Regla 2",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      1,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 3",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      2,
+      1,
+      0,
+      1,
+      1,
+      0,
+      1
+     ],
+     "rhs": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1
+     ]
+    },
+    {
+     "name": "Regla 4",
+     "enabled": true,
+     "sym": "mirrorv",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      2,
+      0,
+      0,
+      0,
+      2,
+      1,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      2,
+      2,
+      2,
+      0
+     ]
+    },
+    {
+     "name": "Regla 5",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      2,
+      1,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      1
+     ],
+     "rhs": [
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1
+     ]
+    },
+    {
+     "name": "Regla 6",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+     ],
+     "rhs": [
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+     ]
+    },
+    {
+     "name": "Regla 7",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      1,
+      0,
+      0
+     ],
+     "rhs": [
+      2,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 8",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      2,
+      1,
+      0,
+      0,
+      0,
+      1,
+      2,
+      0
+     ],
+     "rhs": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      2,
+      2
+     ]
+    }
+   ],
+   "mode": "par-skip",
+   "cell": 7,
+   "speed": 4,
+   "sps": 240,
+   "tile": {
+    "ox": 0,
+    "oy": 0,
+    "w": 3,
+    "h": 2,
+    "cells": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "exampleId": "multi-28",
+   "desc": "8 reglas 3×3 (0 productivas, 3 consumidoras, 5 movedoras), con simetría; módulo total 4, carga total 34, balance literal -4 y real +1. Modo par-skip, toro 64×64, empezando desde un •. Entropía H3: 0.00 → 0.03 (paso 8) → 0.10 (32) → 0.30 (128). Final: sigue activo. Otras condiciones: sopa alta → alta, mancha baja → media, punto baja → media.",
+   "stepCount": 0
+  }
+ },
+ {
+  "fid": "mwv92hts",
+  "nombre": "Órdenes · C+M · sim · mancha · baja → media · sigue activo (4 reglas)",
+  "fecha": "2026-11-24T22:12:09.280Z",
+  "origen": "multi-22",
+  "clave": "[[3,3,[1,0,2,0,0,1,1,0,1],[1,1,0,0,0,1,2,0,1],\"rot\",false],[3,3,[2,0,0,0,0,0,0,0,1],[1,0,0,2,0,0,0,0,0],\"mirror\",false],[3,3,[0,1,0,1,0,0,0,0,0],[0,2,0,0,0,0,0,2,0],\"rot\",false],[3,3,[0,0,1,0,2,0,0,1,0],[0,0,0,0,1,0,0,1,0],\"rot\",false]]|64x64",
+  "estado": {
+   "formato": "punto-1",
+   "world": {
+    "w": 64,
+    "h": 64,
+    "wrap": true,
+    "lattice": {
+     "type": "none",
+     "px": 3,
+     "py": 2,
+     "ox": 0,
+     "oy": 0,
+     "m": 2,
+     "n": 5,
+     "k": 0
+    },
+    "dots": [
+     1820,
+     1821,
+     1822,
+     1825,
+     1827,
+     1884,
+     1887,
+     1888,
+     1948,
+     1950,
+     1953,
+     1954,
+     2012,
+     2014,
+     2019,
+     2077,
+     2078,
+     2080,
+     2081,
+     2140,
+     2143,
+     2144,
+     2145,
+     2146,
+     2207,
+     2269,
+     2271,
+     2272,
+     2273,
+     2275
+    ]
+   },
+   "initial": [
+    1820,
+    1821,
+    1822,
+    1825,
+    1827,
+    1884,
+    1887,
+    1888,
+    1948,
+    1950,
+    1953,
+    1954,
+    2012,
+    2014,
+    2019,
+    2077,
+    2078,
+    2080,
+    2081,
+    2140,
+    2143,
+    2144,
+    2145,
+    2146,
+    2207,
+    2269,
+    2271,
+    2272,
+    2273,
+    2275
+   ],
+   "rules": [
+    {
+     "name": "Regla 1",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      0,
+      2,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1
+     ],
+     "rhs": [
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      2,
+      0,
+      1
+     ]
+    },
+    {
+     "name": "Regla 2",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "rhs": [
+      1,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 3",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0
+     ]
+    },
+    {
+     "name": "Regla 4",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      0,
+      1,
+      0,
+      2,
+      0,
+      0,
+      1,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0
+     ]
+    }
+   ],
+   "mode": "par-skip",
+   "cell": 7,
+   "speed": 4,
+   "sps": 240,
+   "tile": {
+    "ox": 0,
+    "oy": 0,
+    "w": 3,
+    "h": 2,
+    "cells": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "exampleId": "multi-22",
+   "desc": "4 reglas 3×3 (0 productivas, 1 consumidoras, 3 movedoras), con simetría; módulo total 2, carga total 16, balance literal -2 y real +0. Modo par-skip, toro 64×64, empezando desde mancha. Entropía H3: 0.03 → 0.19 (paso 8) → 0.59 (32) → 0.65 (128). Final: sigue activo. Otras condiciones: sopa alta → alta, mancha baja → media, punto baja → baja.",
+   "stepCount": 0
+  }
+ },
+ {
+  "fid": "mwv92rkm",
+  "nombre": "Órdenes · C+M · sim · mancha · baja → baja · sigue activo (4 reglas)",
+  "fecha": "2026-11-24T22:12:21.910Z",
+  "origen": "multi-20",
+  "clave": "[[3,3,[1,2,0,0,0,1,1,0,2],[1,0,1,2,0,0,2,0,2],\"mirror\",false],[3,3,[0,0,1,0,0,0,0,0,0],[0,0,2,0,0,0,0,0,0],\"all\",false],[3,3,[0,2,1,0,2,0,2,0,0],[0,1,0,0,2,0,2,0,0],\"mirror\",false],[3,3,[0,2,1,0,0,1,1,2,0],[0,0,2,1,0,1,0,0,0],\"all\",false]]|64x64",
+  "estado": {
+   "formato": "punto-1",
+   "world": {
+    "w": 64,
+    "h": 64,
+    "wrap": true,
+    "lattice": {
+     "type": "none",
+     "px": 3,
+     "py": 2,
+     "ox": 0,
+     "oy": 0,
+     "m": 2,
+     "n": 5,
+     "k": 0
+    },
+    "dots": [
+     1820,
+     1821,
+     1822,
+     1825,
+     1827,
+     1884,
+     1887,
+     1888,
+     1948,
+     1950,
+     1953,
+     1954,
+     2012,
+     2014,
+     2019,
+     2077,
+     2078,
+     2080,
+     2081,
+     2140,
+     2143,
+     2144,
+     2145,
+     2146,
+     2207,
+     2269,
+     2271,
+     2272,
+     2273,
+     2275
+    ]
+   },
+   "initial": [
+    1820,
+    1821,
+    1822,
+    1825,
+    1827,
+    1884,
+    1887,
+    1888,
+    1948,
+    1950,
+    1953,
+    1954,
+    2012,
+    2014,
+    2019,
+    2077,
+    2078,
+    2080,
+    2081,
+    2140,
+    2143,
+    2144,
+    2145,
+    2146,
+    2207,
+    2269,
+    2271,
+    2272,
+    2273,
+    2275
+   ],
+   "rules": [
+    {
+     "name": "Regla 1",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      1,
+      2,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      2
+     ],
+     "rhs": [
+      1,
+      0,
+      1,
+      2,
+      0,
+      0,
+      2,
+      0,
+      2
+     ]
+    },
+    {
+     "name": "Regla 2",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 3",
+     "enabled": true,
+     "sym": "mirror",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      2,
+      1,
+      0,
+      2,
+      0,
+      2,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      1,
+      0,
+      0,
+      2,
+      0,
+      2,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 4",
+     "enabled": true,
+     "sym": "all",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      2,
+      1,
+      0,
+      0,
+      1,
+      1,
+      2,
+      0
+     ],
+     "rhs": [
+      0,
+      0,
+      2,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "mode": "par-skip",
+   "cell": 7,
+   "speed": 4,
+   "sps": 240,
+   "tile": {
+    "ox": 0,
+    "oy": 0,
+    "w": 3,
+    "h": 2,
+    "cells": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "exampleId": "multi-20",
+   "desc": "4 reglas 3×3 (0 productivas, 3 consumidoras, 1 movedoras), con simetría; módulo total 3, carga total 13, balance literal -3 y real -2. Modo par-skip, toro 64×64, empezando desde mancha. Entropía H3: 0.03 → 0.05 (paso 8) → 0.09 (32) → 0.09 (128). Final: sigue activo. Otras condiciones: sopa alta → alta, mancha baja → baja, punto baja → baja.",
+   "stepCount": 0
+  }
+ },
+ {
+  "fid": "mwv92y57",
+  "nombre": "Órdenes · C+M · sim · mancha · baja → alta · sigue activo (3 reglas)",
+  "fecha": "2026-11-24T22:12:30.427Z",
+  "origen": "multi-18",
+  "clave": "[[3,3,[0,2,0,0,0,1,0,0,0],[0,1,0,0,0,0,0,0,0],\"rot\",false],[3,3,[0,0,1,1,2,0,1,1,0],[1,0,2,0,2,0,2,0,1],\"mirrorv\",false],[3,3,[0,1,0,0,0,0,1,0,0],[0,2,0,0,0,0,0,0,0],\"rot\",false]]|64x64",
+  "estado": {
+   "formato": "punto-1",
+   "world": {
+    "w": 64,
+    "h": 64,
+    "wrap": true,
+    "lattice": {
+     "type": "none",
+     "px": 3,
+     "py": 2,
+     "ox": 0,
+     "oy": 0,
+     "m": 2,
+     "n": 5,
+     "k": 0
+    },
+    "dots": [
+     1820,
+     1821,
+     1822,
+     1825,
+     1827,
+     1884,
+     1887,
+     1888,
+     1948,
+     1950,
+     1953,
+     1954,
+     2012,
+     2014,
+     2019,
+     2077,
+     2078,
+     2080,
+     2081,
+     2140,
+     2143,
+     2144,
+     2145,
+     2146,
+     2207,
+     2269,
+     2271,
+     2272,
+     2273,
+     2275
+    ]
+   },
+   "initial": [
+    1820,
+    1821,
+    1822,
+    1825,
+    1827,
+    1884,
+    1887,
+    1888,
+    1948,
+    1950,
+    1953,
+    1954,
+    2012,
+    2014,
+    2019,
+    2077,
+    2078,
+    2080,
+    2081,
+    2140,
+    2143,
+    2144,
+    2145,
+    2146,
+    2207,
+    2269,
+    2271,
+    2272,
+    2273,
+    2275
+   ],
+   "rules": [
+    {
+     "name": "Regla 1",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      2,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "Regla 2",
+     "enabled": true,
+     "sym": "mirrorv",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      0,
+      1,
+      1,
+      2,
+      0,
+      1,
+      1,
+      0
+     ],
+     "rhs": [
+      1,
+      0,
+      2,
+      0,
+      2,
+      0,
+      2,
+      0,
+      1
+     ]
+    },
+    {
+     "name": "Regla 3",
+     "enabled": true,
+     "sym": "rot",
+     "anchored": false,
+     "w": 3,
+     "h": 3,
+     "anchor": [
+      1,
+      1
+     ],
+     "lhs": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0
+     ],
+     "rhs": [
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ],
+   "mode": "par-skip",
+   "cell": 7,
+   "speed": 4,
+   "sps": 240,
+   "tile": {
+    "ox": 0,
+    "oy": 0,
+    "w": 3,
+    "h": 2,
+    "cells": [
+     0,
+     0,
+     1,
+     0,
+     0,
+     0
+    ]
+   },
+   "exampleId": "multi-18",
+   "desc": "3 reglas 3×3 (0 productivas, 2 consumidoras, 1 movedoras), con simetría; módulo total 4, carga total 10, balance literal -4 y real -2. Modo par-skip, toro 64×64, empezando desde mancha. Entropía H3: 0.03 → 0.21 (paso 8) → 0.89 (32) → 0.89 (128). Final: sigue activo. Otras condiciones: sopa alta → alta, mancha baja → alta, punto baja → media.",
+   "stepCount": 0
+  }
+ }
+]
