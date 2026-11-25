@@ -5,6 +5,8 @@
   const { ANY, DOT, EMPTY } = P;
   const SISTEMAS_MULTI = (typeof module !== "undefined" && module.exports ? (() => { try { return require("./sistemas_multi.js"); } catch (e) { return null; } })() : global.PuntoSistemasMulti) || null;
   const SISTEMAS = (typeof module !== "undefined" && module.exports ? require("./sistemas.js") : global.PuntoSistemas) || null;
+  const LOGICA = typeof module !== "undefined" && module.exports ? require("./logica.js") : global.PuntoLogica;
+  const TURING = typeof module !== "undefined" && module.exports ? require("./turing.js") : global.PuntoTuring;
   const GANADORES = (typeof module !== "undefined" && module.exports ? require("./ganadores.js") : global.PuntoGanadores) || [];
 
   /** Construye una regla a partir de una lista de celdas [x, y, lhs, rhs] con coordenadas libres. */
@@ -253,6 +255,59 @@
       init() { },
     },
   ];
+
+  // ---------- Puertas lógicas (logica.js) ----------
+  // Cada carril mide 6 celdas: • en la 1.ª = 0, • en la 2.ª = 1. Filas pares: señales; impares: código del componente.
+  if (LOGICA) {
+    const sinRed = { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 };
+    const ejLogica = (id, name, desc, filas, cell = 6) => {
+      const M = LOGICA.mundoTablas(filas);
+      EXAMPLES.push({
+        id, name, desc, mode: "par-skip", cell, speed: 0.1,
+        world: { w: M.w, h: M.h, wrap: false, lattice: sinRed },
+        rules: () => LOGICA.reglasLogica(LOGICA.tiposDe(filas.map(f => f.circ))),
+        init(world) { for (const s of M.sitios) LOGICA.pintar(world, s.circ, s.vals, s.x, s.y); },
+        logica: M,
+      });
+    };
+    const todas = c => [{ circ: c, combos: LOGICA.combinaciones(c.entradas.length) }];
+    const COD = "Cada señal ocupa un carril de 6 celdas con doble raíl: • en la primera celda = 0, • en la segunda = 1 " +
+      "(con un solo raíl el 0 sería vacío y NOT no podría dispararse). Las señales bajan: filas pares, señales; impares, " +
+      "el código de cada componente, un patrón de • que empieza por «••». Sin red ni anclaje: en una fila de señales nunca " +
+      "hay dos • seguidos, así que las reglas solo encajan alineadas con un código, y los códigos son sin coma.";
+    ejLogica("logica-tablas", "Puertas lógicas: tablas de verdad (AND, OR, XOR, NAND, NOR, XNOR, NOT)",
+      "Una fila por puerta, de arriba abajo AND, OR, XOR, NAND, NOR, XNOR y NOT, con todas sus entradas (00, 01, 10, 11). " +
+      "Cada puerta son 4 reglas (2 para NOT): leen las dos entradas y el código, borran las entradas y escriben la salida. " + COD,
+      LOGICA.PUERTAS.map(t => todas(LOGICA.circuitoPuerta(t))[0]), 12);
+    ejLogica("logica-semisumador", "Puertas lógicas: semisumador (A + B)",
+      "Las 4 sumas a la vez, de izquierda a derecha 0+0, 0+1, 1+0, 1+1. Etapa 1: copia A y B; etapa 2: cruce para " +
+      "tener A B A B; etapa 3: XOR da la suma (carril 0) y AND el acarreo (carril 2). " + COD,
+      todas(LOGICA.CIRCUITOS.semisumador));
+    ejLogica("logica-sumador", "Puertas lógicas: sumador completo (A + B + Cin)",
+      "Las 8 combinaciones a la vez. Dos semisumadores y un OR, con desplazamientos y cruces para llevar cada señal a su " +
+      "sitio: 11 etapas. Al final, la suma en el carril 0 y el acarreo en el carril 3. " + COD,
+      todas(LOGICA.CIRCUITOS.sumador));
+  }
+
+  // ---------- Máquinas de Turing (turing.js) ----------
+  if (TURING) {
+    for (const m of TURING.MAQUINAS) {
+      const M = TURING.preparar(m.tabla), cinta = { x0: 2, y0: 2, largo: m.largo };
+      const tabla = Object.entries(m.tabla).map(([q, t]) => `${q}: ${Object.entries(t).map(([s, x]) => `${s}→${x}`).join(", ")}`).join("; ");
+      EXAMPLES.push({
+        id: m.id, name: "Turing · " + m.nombre,
+        desc: m.desc + ` Tabla (lee → escribe, mueve, estado): ${tabla}. Cada casilla de la cinta es una columna de ${M.alto} ` +
+          `celdas: marca •, símbolo (• = 1), estado de la cabeza en ${M.b} bits y marca •. Una regla por transición, sin ` +
+          "anclaje: las dos marcas fijan la fila y solo la columna de la cabeza tiene estado, así que en cada paso hay " +
+          "exactamente una coincidencia. Al llegar a H no queda ninguna y la máquina para.",
+        world: { w: m.largo + 4, h: M.alto + 4, wrap: false, lattice: { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
+        mode: "seq", cell: 22, speed: 0.05,
+        rules: () => TURING.reglasTuring(m.tabla),
+        init(world) { TURING.pintarCinta(world, m.tabla, { ...cinta, cinta: m.cinta, cabeza: m.cabeza }); },
+        cinta,
+      });
+    }
+  }
 
   // ---------- Codificaciones autolocalizables (generadas por busqueda/) ----------
   // Estados: s = 5·c + 0 (sin hormiga) o 5·c + 1 + d, con c 0 blanco / 1 negro y d 0 ↑, 1 ←, 2 ↓, 3 →.
