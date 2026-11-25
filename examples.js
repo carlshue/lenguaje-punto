@@ -289,25 +289,45 @@
       todas(LOGICA.CIRCUITOS.sumador));
   }
 
-  // ---------- Máquinas de Turing (turing.js) ----------
-  if (TURING) {
-    for (const m of TURING.MAQUINAS) {
-      const M = TURING.preparar(m.tabla), cinta = { x0: 2, y0: 2, largo: m.largo };
-      const tabla = Object.entries(m.tabla).map(([q, t]) => `${q}: ${Object.entries(t).map(([s, x]) => `${s}→${x}`).join(", ")}`).join("; ");
-      EXAMPLES.push({
-        id: m.id, name: "Turing · " + m.nombre,
-        desc: m.desc + ` Tabla (lee → escribe, mueve, estado): ${tabla}. Cada casilla de la cinta es una columna de ${M.alto} ` +
-          `celdas: marca •, símbolo (• = 1), estado de la cabeza en ${M.b} bits y marca •. Una regla por transición, sin ` +
-          "anclaje: las dos marcas fijan la fila y solo la columna de la cabeza tiene estado, así que en cada paso hay " +
-          "exactamente una coincidencia. Al llegar a H no queda ninguna y la máquina para.",
-        world: { w: m.largo + 4, h: M.alto + 4, wrap: false, lattice: { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
-        mode: "seq", cell: 22, speed: 0.05,
-        rules: () => TURING.reglasTuring(m.tabla),
-        init(world) { TURING.pintarCinta(world, m.tabla, { ...cinta, cinta: m.cinta, cabeza: m.cabeza }); },
-        cinta,
+  // ---------- Máquina de Turing universal (turing.js) ----------
+  // Un único juego de reglas para todos los programas: lo que cambia entre ejemplos son los •.
+  const tablaTexto = tabla => Object.entries(tabla).map(([q, t]) => `${q}: ${t[0] || "-"} ${t[1] || "-"}`).join("\n");
+  function ejemploTuring(m) {
+    const { simbolos, inicioCinta } = TURING.tira(m);
+    const n = TURING.reglasUniversales().length;
+    return {
+      id: "turing-" + m.id, name: "Turing universal · " + m.nombre,
+      desc: `${m.desc} Programa: ${tablaTexto(m.tabla).replace(/\n/g, "; ")} (escribe, mueve y estado siguiente al leer 0 y al leer 1). ` +
+        `Las mismas ${n} reglas para todos los programas: el programa y su cinta están en los •. Cada columna es una casilla ` +
+        `de la máquina universal: marca •, símbolo (5 bits), estado del cabezal universal (5 bits) y marca •. A la izquierda, ` +
+        `el programa (${inicioCinta} columnas: un bloque por estado; el número del estado siguiente va en unario); a la derecha, la ` +
+        "cinta simulada. Sin anclaje: en cada paso hay exactamente una coincidencia, y al llegar a HALT no queda ninguna.",
+      world: { w: simbolos.length + 2, h: TURING.ALTO + 2, wrap: false, lattice: { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
+      mode: "seq", cell: 12, speed: 10,
+      rules: () => TURING.reglasUniversales(),
+      init(world) { TURING.pintar(world, simbolos, 1, 1); },
+      programa: m,
+    };
+  }
+  /** «A: 1RB 1LB» por línea (transición al leer 0 y al leer 1; H = parar, - = no definida). */
+  function leerPrograma(texto) {
+    const tabla = {};
+    for (const linea of texto.split(/[\n;]+/).map(l => l.trim()).filter(Boolean)) {
+      const m = linea.match(/^(\w+)\s*:\s*(\S+)\s+(\S+)$/);
+      if (!m) throw new Error(`no entiendo «${linea}»`);
+      tabla[m[1]] = {};
+      [m[2], m[3]].forEach((t, s) => {
+        if (t === "-") return;
+        if (!/^[01][LR]\w+$/.test(t)) throw new Error(`transición «${t}»: usa escribe (0/1), mueve (L/R) y estado`);
+        tabla[m[1]][s] = t[0] + t[1] + t.slice(2);
       });
     }
+    for (const q of Object.keys(tabla)) for (const t of Object.values(tabla[q]))
+      if (t.slice(2) !== "H" && !tabla[t.slice(2)]) throw new Error(`el estado ${t.slice(2)} no está definido`);
+    if (!Object.keys(tabla).length) throw new Error("el programa está vacío");
+    return tabla;
   }
+  if (TURING) for (const m of TURING.PROGRAMAS) EXAMPLES.push(ejemploTuring(m));
 
   // ---------- Codificaciones autolocalizables (generadas por busqueda/) ----------
   // Estados: s = 5·c + 0 (sin hormiga) o 5·c + 1 + d, con c 0 blanco / 1 negro y d 0 ↑, 1 ←, 2 ↓, 3 →.
@@ -405,7 +425,7 @@
     }
   }
 
-  const api = { EXAMPLES, ruleFromCells, reglasHormigaMinima, reglasSeparables, SIN_RED_A, reglasBloques, pintaBloque, GANADORES };
+  const api = { EXAMPLES, ejemploTuring, leerPrograma, tablaTexto, ruleFromCells, reglasHormigaMinima, reglasSeparables, SIN_RED_A, reglasBloques, pintaBloque, GANADORES };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else global.PuntoEjemplos = api;
 })(typeof window !== "undefined" ? window : globalThis);

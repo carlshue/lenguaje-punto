@@ -446,6 +446,22 @@
     document.querySelectorAll(".tab").forEach(t => t.classList.toggle("hidden", t.id !== "tab-" + b.dataset.tab));
   });
 
+  // Máquina universal: programa propio con las mismas reglas
+  $("tmCargar").onclick = () => {
+    try {
+      const E = PuntoEjemplos;
+      const tabla = E.leerPrograma($("tmTabla").value);
+      const largo = Math.max(1, +$("tmLargo").value || 8), cabeza = Math.min(largo - 1, Math.max(0, +$("tmCabeza").value || 0));
+      const cinta = ($("tmCinta").value || "").replace(/[^01]/g, "");
+      const ex = E.ejemploTuring({ id: "propio", nombre: "Tu programa", desc: "Programa escrito en la pestaña Mundo.",
+        tabla, cinta, cabeza, largo: Math.max(largo, cinta.length) });
+      const i = EXAMPLES.findIndex(e => e.id === ex.id);
+      if (i >= 0) EXAMPLES[i] = ex; else EXAMPLES.push(ex);
+      loadExample(ex.id); renderGaleria();
+      if (autoRun) start();
+    } catch (err) { alert("Programa no válido: " + err.message); }
+  };
+
   $("applySize").onclick = () => {
     stop();
     const nw = Math.max(4, Math.min(1000, +$("worldW").value || 4)), nh = Math.max(4, Math.min(1000, +$("worldH").value || 4));

@@ -78,6 +78,18 @@
       </div>
 
       <div class="tab hidden" id="tab-world">
+        <h3>Máquina de Turing universal</h3>
+        <p class="hint">Escribe un programa y se carga con las mismas reglas fijas. Una línea por estado: la transición al
+          leer 0 y al leer 1 (escribe 0/1, mueve L/R, estado siguiente; H = parar, - = no definida). El primero es el inicial.</p>
+        <textarea id="tmTabla" rows="4" spellcheck="false">A: 1RB 1LB
+B: 1LA 1RH</textarea>
+        <div class="row">
+          <label>Cinta <input type="text" id="tmCinta" value="" placeholder="p. ej. 0111011" size="12"></label>
+          <label>Cabezal <input type="number" id="tmCabeza" value="3" min="0"></label>
+          <label>Largo <input type="number" id="tmLargo" value="8" min="1" max="200"></label>
+        </div>
+        <div class="row"><button id="tmCargar">Cargar en la máquina universal</button></div>
+
         <h3>Grilla</h3>
         <div class="row">
           <label>Ancho <input type="number" id="worldW" min="4" max="1000"></label>

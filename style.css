@@ -79,3 +79,4 @@ header .auto { font-size: 12px; color: var(--mute); display: flex; align-items: 
 #galList .galStar { flex: none; width: 26px; border: 0; background: transparent; cursor: pointer; font-size: 15px; color: #c98500; padding: 2px; }
 #galList .galRow .galItem { flex: 1; }
 header #favBtn { font-size: 16px; color: #c98500; }
+#tmTabla { width: 100%; box-sizing: border-box; font-family: ui-monospace, Consolas, monospace; font-size: 13px; padding: 6px; border: 1px solid var(--line, #ddd); border-radius: 6px; resize: vertical; }

@@ -54,15 +54,34 @@ AND, OR, XOR, NAND, NOR, XNOR y NOT como reglas, y con ellas un semisumador y un
 |---|---|
 | ![Tablas de verdad](docs/capturas/logica-tablas.png) | ![Sumador completo](docs/capturas/logica-sumador.png) |
 
-### Máquinas de Turing
+### Máquina de Turing universal
 
-Suma unaria (3 + 2) y los busy beaver de 2, 3 y 4 estados. El de 4 estados escribe 13 unos en 107 pasos y para.
+Un único juego de **95 reglas fijas** ejecuta cualquier programa. El programa (la tabla de la máquina) y su cinta están escritos en • en el mundo, así que para cambiar de programa se cambian los •, no las reglas. Vienen cargados la suma unaria 3 + 2 y los busy beaver de 2, 3 y 4 estados. En la pestaña **Mundo** puedes escribir tu propio programa:
 
-- Cada casilla de la cinta es una columna: marca •, símbolo, estado de la cabeza en binario y otra marca •.
-- Hay una regla por transición. Lee la columna de la cabeza y la vecina, escribe el símbolo y mueve el estado.
-- Sin anclaje. Las dos marcas fijan la fila, y solo la columna de la cabeza tiene estado, así que en cada paso hay exactamente una coincidencia. Al llegar al estado de parada no queda ninguna y la máquina se detiene.
+```
+A: 1RB 1LB
+B: 1LA 1RH
+```
 
-![Busy beaver de 4 estados al parar, con sus reglas](docs/capturas/turing-bb4.png)
+Cada línea es un estado, con la transición al leer 0 y al leer 1: escribe 0/1, mueve L/R y estado siguiente. `H` = parar.
+
+- Cada columna es una casilla de la máquina universal. Lleva una marca •, el símbolo (5 bits), el estado del cabezal universal (5 bits) y otra marca •.
+- A la izquierda está el programa: un bloque por estado, con la transición para 0 y para 1, y el número del estado siguiente en unario. A la derecha, la cinta simulada.
+- En cada paso simulado, el cabezal universal hace lo siguiente:
+  1. Lee la casilla.
+  2. Busca el bloque del estado actual y la transición que toca.
+  3. Escribe en la cinta y mueve el cabezal simulado.
+  4. Cuenta las N del estado siguiente para marcar su bloque.
+- Sin anclaje: en cada paso hay exactamente una coincidencia, y al llegar a HALT no queda ninguna.
+
+| Programa | Pasos simulados | Pasos de la universal |
+|---|---|---|
+| Suma 3 + 2 | 8 | 1.412 |
+| Busy beaver 2 | 6 | 679 |
+| Busy beaver 3 | 14 | 3.394 |
+| Busy beaver 4 | 107 | 36.951 |
+
+![La máquina universal tras ejecutar el busy beaver de 4 estados, con sus reglas](docs/capturas/turing-bb4.png)
 
 ### Clásicos
 
@@ -103,7 +122,8 @@ Con reglas que miran el bloque actual y el destino completos, no anclar sale gra
 | `engine.js` | Motor (también se usa desde Node) |
 | `examples.js` | Ejemplos de la galería |
 | `ganadores.js`, `sistemas.js`, `sistemas_multi.js` | Datos generados por los scripts de `busqueda/` |
-| `logica.js`, `turing.js` | Puertas lógicas y máquinas de Turing: codificación, reglas y circuitos |
+| `logica.js` | Puertas lógicas: codificación, reglas y circuitos |
+| `turing.js` | Máquina de Turing universal: tabla fija, compilación a reglas y codificación de programas |
 | `servidor.py` | Servidor local sin caché, con la API de favoritos |
 | `busqueda/` | Búsqueda de codificaciones autolocalizables (Python + numpy) |
 | `busqueda/hormiga/` | Hormiga con el mínimo de reglas y hormiga sin red |
@@ -119,4 +139,4 @@ node test/logica.js
 node test/turing.js
 ```
 
-Comprueban que las hormigas reproducen paso a paso la hormiga clásica (autopista incluida), que las autolocalizables dan una sola coincidencia por paso sin anclaje, que Sierpinski coincide con la regla 90 y que los ejemplos conservativos conservan los •. La segunda tarda unos dos minutos. Las dos últimas comprueban todas las entradas de cada circuito y cada máquina contra su simulación directa, y que ninguna regla encaja fuera de su sitio.
+Comprueban que las hormigas reproducen paso a paso la hormiga clásica (autopista incluida), que las autolocalizables dan una sola coincidencia por paso sin anclaje, que Sierpinski coincide con la regla 90 y que los ejemplos conservativos conservan los •. La segunda tarda unos dos minutos. Las dos últimas comprueban todas las entradas de cada circuito y cada programa de la máquina universal contra su simulación directa, y que ninguna regla encaja fuera de su sitio. La de la máquina universal tarda unos 20 segundos.

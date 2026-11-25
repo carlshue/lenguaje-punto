@@ -23,7 +23,7 @@ Los antecedentes ya están hablados (Leibniz, Spencer-Brown *Laws of Form*, Linc
   - `node test/test.js`: hormigas contra la clásica paso a paso (autopista al ~10.000), cruz sin anclaje ambigua, Sierpinski = regla 90, conservación en gas y arena. Unos segundos.
   - `node test/autolocalizables.js [pasos] [pasos_unicidad]`: los 4 ganadores sin anclaje, 1 coincidencia por paso y trayectoria clásica. ~2 minutos; lánzalo en segundo plano.
   - `node test/logica.js`: códigos sin coma; tablas de verdad, semisumador y sumador completo con todas las entradas; ninguna coincidencia fuera de un componente real.
-  - `node test/turing.js`: cada máquina en el motor da 1 coincidencia por paso y la misma cinta, pasos y estado final que la simulación directa.
+  - `node test/turing.js [pasos_unicidad]`: la máquina universal con cada programa: 1 coincidencia por paso, misma cinta y cabezal que la simulación directa, para en HALT y deja el programa sin marcas. ~20 s.
 
 ## Estructura
 
@@ -37,7 +37,8 @@ Los antecedentes ya están hablados (Leibniz, Spencer-Brown *Laws of Form*, Linc
   - `findMatches` busca candidatos partiendo de los • (la primera celda • de cada variante).
 - `examples.js`: ejemplos a mano, `ruleFromCells(name, [[x,y,lhs,rhs],...], {anchor, sym, anchored})`, `reglasHormigaMinima`, `reglasSeparables`, `reglasBloques` (ganadores), y la conversión de `sistemas.js` / `sistemas_multi.js` en ejemplos.
 - `logica.js` (`PuntoLogica`): puertas lógicas. Tipos de componente, códigos, `reglasLogica`, circuitos (`CIRCUITOS`), `evaluar` (referencia abstracta), `pintar`/`leer`, `mundoTablas`.
-- `turing.js` (`PuntoTuring`): máquinas de Turing. `reglasTuring(tabla)`, `pintarCinta`/`leerCinta`, `simular` (referencia) y `MAQUINAS`. Tabla: `{ A: { 0: "1RB", 1: "1LB" }, ... }`; `H` para.
+- `turing.js` (`PuntoTuring`): máquina de Turing universal. `DELTA` (tabla fija de la universal), `reglasUniversales()` (la compila a reglas •), `codificarPrograma`/`tira`/`pintar`/`leer`, `universalDirecta` (la universal sobre símbolos, rápida), `simular` (la máquina simulada, referencia) y `PROGRAMAS`. Tabla de un programa: `{ A: { 0: "1RB", 1: "1LB" }, ... }`; `H` para.
+- `examples.js` expone `ejemploTuring(programa)` y `leerPrograma(texto)`; el formulario de la pestaña Mundo los usa para cargar programas propios (id `turing-propio`).
 - Datos generados (no editar a mano):
   - `ganadores.js` ← `busqueda/exportar.py`.
   - `sistemas.js` ← `busqueda/entropia/galeria.py` (45 sistemas de una regla, ids `ent-*` y `bb-*`).
@@ -102,11 +103,15 @@ LHS = bloque actual + bloque destino completos, 16 reglas. Mínimo de celdas por
 - Autolocalización demostrada, sin anclaje. Todo código es «11» + carga sin «11» que empieza por 0 + «0»: en vertical solo encaja sobre filas de código (las de señales nunca tienen «11»), y en horizontal es un código sin coma. W = 6 es lo mínimo con este esquema para 2 tipos de 1 carril y 10 de 2: con W = 3 o 4 solo cabe un código de 1 carril, y con W = 5 solo 5 de 2 carriles. (Una búsqueda general de códigos sin coma tampoco encontró dos códigos de 1 carril con W = 3.)
 - Circuitos: semisumador (3 etapas) y sumador completo (2 semisumadores + OR, 11 etapas).
 
-### Máquinas de Turing (`turing.js`)
+### Máquina de Turing universal (`turing.js`)
 
-- Casilla = columna: marca, símbolo, estado en b bits, marca (alto b + 3). Una regla de 2 columnas por transición; el símbolo de la vecina es «cualquiera».
-- Exactamente 1 coincidencia por paso, demostrado: las dos marcas impiden desplazamientos verticales (fuera de la cinta todo está vacío) y en horizontal las casillas miden 1. Requiere una sola cinta en el mundo.
-- Máquinas: suma unaria 3+2 (8 pasos), BB(2) (4 unos, 6 pasos), BB(3) (6 unos, 14 pasos), BB(4) (13 unos, 107 pasos).
+- Lo que Carlos quería: **un solo juego de reglas** que ejecuta cualquier programa; el programa está en los •. No hay que generar reglas por máquina.
+- Es una máquina de Turing fija de 24 estados sobre un alfabeto de 18 símbolos (`#`, `B`, `B*`, `B'`, `W0`, `W1`, `W0*`, `W1*`, `L`, `R`, `N`, `N*`, `S`, `$`, `T0`, `T1`, `T0*`, `T1*`), compilada a • con columnas de 12 celdas: marca, símbolo (5 bits), estado (5 bits), marca.
+- Tira: `#`, un bloque por estado del programa (`B` + transición con 0 + `S` + transición con 1; cada transición = `W0|W1`, `L|R` y k veces `N` = estado siguiente en unario, 0 = parar), `$` y la cinta simulada (`T0`/`T1`, con `*` en el cabezal).
+- Estado actual = bloque marcado `B*`. Para pasar al estado k cuenta: por cada `N` de la transición marca un bloque más desde la izquierda (`B'` = ya contado, `B*` = candidato).
+- 95 reglas: los grupos de símbolos con la misma acción se cubren con «cubos» de bits (comodines sobre los códigos libres). Exactamente 1 coincidencia por paso, demostrado igual que antes (marcas arriba y abajo, casillas de 1 columna).
+- Coste: el programa ocupa 2 + Σ por estado (6 + k0 + k1) columnas, con k0 y k1 los números de los estados siguientes; un paso simulado cuesta O(largo de la tira × estado siguiente) pasos universales. BB(4): 107 pasos simulados = 36.951 pasos universales.
+- Universal en el sentido de que ejecuta cualquier máquina de 2 símbolos con cualquier número de estados; la cinta es finita (la que quepa en el mundo).
 
 ## Ideas abiertas
 
@@ -115,7 +120,7 @@ LHS = bloque actual + bloque destino completos, 16 reglas. Mínimo de celdas por
 - Teoría: Golomb, Gordon y Welch; sincronización de bloques en autómatas celulares.
 - Otros sistemas: regla 110, Juego de la Vida (¿cuánto cuesta hacerlo conservativo?).
 - Lógica: medir el coste por puerta (celdas por regla, reglas por puerta), y cablear sin etapas de PASO (hoy cada señal necesita un componente en cada etapa).
-- Turing: máquina universal pequeña, o un mismo juego de reglas para cualquier tabla escrita en la cinta.
+- Universal: reducir reglas y estados (¿cuál es la universal más pequeña en celdas • totales?), cinta que crece sola, más de 2 símbolos, y que la universal se ejecute a sí misma.
 - Teselados no rectangulares (el comprobador ya acepta cualquier prototesela con red).
 - Estudiar los favoritos de entropía: qué rasgos comparten.
 - Editor: aviso cuando una regla encaja en más de un sitio en modo secuencial.
