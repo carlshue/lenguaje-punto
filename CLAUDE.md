@@ -23,12 +23,13 @@ Los antecedentes ya están hablados (Leibniz, Spencer-Brown *Laws of Form*, Linc
   - `node test/test.js`: hormigas contra la clásica paso a paso (autopista al ~10.000), cruz sin anclaje ambigua, Sierpinski = regla 90, conservación en gas y arena. Unos segundos.
   - `node test/autolocalizables.js [pasos] [pasos_unicidad]`: los 4 ganadores sin anclaje, 1 coincidencia por paso y trayectoria clásica. ~2 minutos; lánzalo en segundo plano.
   - `node test/logica.js`: códigos sin coma; tablas de verdad, semisumador y sumador completo con todas las entradas; ninguna coincidencia fuera de un componente real.
+  - `node test/vida.js`: el Juego de la Vida generación a generación contra una implementación directa (toro y bordes), cañón de Gosper y púlsar. ~2 s.
   - `node test/turing.js [pasos_unicidad]`: la máquina universal con cada programa: 1 coincidencia por paso, misma cinta y cabezal que la simulación directa, para en HALT y deja el programa sin marcas. ~20 s.
 
 ## Estructura
 
 - `index.html`, `style.css`, `app.js`: editor. Lienzo, barra con ◀ ▶ y selector de autómata, ★ favoritos, «ejecutar al cargar», velocidad en pasos/s (escala logarítmica 0,5–20.000), pestañas Galería / Reglas / Mundo / Ayuda, exportar/importar JSON (`formato: "punto-1"`), estado en localStorage.
-  - Galería: categorías por prefijo de id (`hormiga*`/`auto*` → Hormigas, `logica-` → Puertas lógicas, `turing-` → Máquinas de Turing, `ent-` → Entropía, `bb-` → Busy beaver, `multi-` → Órdenes, resto → Clásicos), filtro de texto y navegación con ← →.
+  - Galería: categorías por prefijo de id (`hormiga*`/`auto*` → Hormigas, `logica-` → Puertas lógicas, `turing-` → Máquinas de Turing, `vida-` → Juego de la Vida, `ent-` → Entropía, `bb-` → Busy beaver, `multi-` → Órdenes, resto → Clásicos), filtro de texto y navegación con ← →.
   - Favoritos: instantánea completa (reglas + mundo inicial + modo) identificada por la clave de las reglas y el tamaño del mundo.
 - `engine.js`: motor, también desde Node.
   - Regla: `w, h`, `lhs[]` (0 cualquiera, 1 •, 2 vacío), `rhs[]` (0 no tocar, 1 poner •, 2 vaciar), `sym` (`none|rot|mirror|mirrorv|all`), `anchored`, `anchor` (centro de las simetrías y punto que debe caer en la red si está anclada).
@@ -38,6 +39,7 @@ Los antecedentes ya están hablados (Leibniz, Spencer-Brown *Laws of Form*, Linc
 - `examples.js`: ejemplos a mano, `ruleFromCells(name, [[x,y,lhs,rhs],...], {anchor, sym, anchored})`, `reglasHormigaMinima`, `reglasSeparables`, `reglasBloques` (ganadores), y la conversión de `sistemas.js` / `sistemas_multi.js` en ejemplos.
 - `logica.js` (`PuntoLogica`): puertas lógicas. Tipos de componente, códigos, `reglasLogica`, circuitos (`CIRCUITOS`), `evaluar` (referencia abstracta), `pintar`/`leer`, `mundoTablas`.
 - `turing.js` (`PuntoTuring`): máquina de Turing universal. `DELTA` (tabla fija de la universal), `reglasUniversales()` (la compila a reglas •), `codificarPrograma`/`tira`/`pintar`/`leer`, `universalDirecta` (la universal sobre símbolos, rápida), `simular` (la máquina simulada, referencia) y `PROGRAMAS`. Tabla de un programa: `{ A: { 0: "1RB", 1: "1LB" }, ... }`; `H` para.
+- `vida.js` (`PuntoVida`): Juego de la Vida. `reglasVida()`, `clases(k)`, `generacion` (referencia directa), `PATRONES`, `poner`, `sopa`.
 - `examples.js` expone `ejemploTuring(programa)` y `leerPrograma(texto)`; el formulario de la pestaña Mundo los usa para cargar programas propios (id `turing-propio`).
 - Datos generados (no editar a mano):
   - `ganadores.js` ← `busqueda/exportar.py`.
@@ -113,12 +115,20 @@ LHS = bloque actual + bloque destino completos, 16 reglas. Mínimo de celdas por
 - Coste: el programa ocupa 2 + Σ por estado (6 + k0 + k1) columnas, con k0 y k1 los números de los estados siguientes; un paso simulado cuesta O(largo de la tira × estado siguiente) pasos universales. BB(4): 107 pasos simulados = 36.951 pasos universales.
 - Universal en el sentido de que ejecuta cualquier máquina de 2 símbolos con cualquier número de estados; la cinta es finita (la que quepa en el mundo).
 
+### Juego de la Vida (`vida.js`)
+
+- Hecho con el sistema de reglas tal cual (Carlos lo exigió: no se toca el motor). 26 reglas 3×3, `sym: "all"`, 135 variantes, modo `par-prio`.
+- Nace: centro vacío + exactamente 3 vecinos (10 clases salvo D4, 56 vecindarios). Soledad: centro • + 0 o 1 vecinos (3 clases, 9 vecindarios). Exceso: centro • + 4 vecinos • y el resto «cualquiera» (13 clases, 70 cuartetos). Sobrevivir no necesita regla.
+- «Exceso» solapa: una celda con 5 vecinos encaja en 5 cuartetos. Escriben lo mismo, así que `par-prio` da el resultado exacto; `par-skip` no sirve.
+- Sin toro, las celdas del borde no cambian (su ventana 3×3 se sale y no encaja). La referencia de la prueba usa la misma convención.
+- Comprobado generación a generación contra Conway directo: sopas en toro y con bordes (300 generaciones), planeador, púlsar (periodo 3) y cañón de Gosper (+5 células cada 30 generaciones).
+
 ## Ideas abiertas
 
 - Reglas mínimas: permitir «cualquiera» y minimizar celdas especificadas manteniendo la no ambigüedad. Probablemente ahí sí cuesta no anclar.
 - LHS de un solo bloque (análogo directo de los códigos sin coma).
 - Teoría: Golomb, Gordon y Welch; sincronización de bloques en autómatas celulares.
-- Otros sistemas: regla 110, Juego de la Vida (¿cuánto cuesta hacerlo conservativo?).
+- Otros sistemas: regla 110. Vida: ¿cuántas celdas especificadas como mínimo? ¿Se puede sin modo paralelo (con reglas secuenciales y fases)? ¿Y una versión conservativa?
 - Lógica: medir el coste por puerta (celdas por regla, reglas por puerta), y cablear sin etapas de PASO (hoy cada señal necesita un componente en cada etapa).
 - Universal: reducir reglas y estados (¿cuál es la universal más pequeña en celdas • totales?), cinta que crece sola, más de 2 símbolos, y que la universal se ejecute a sí misma.
 - Teselados no rectangulares (el comprobador ya acepta cualquier prototesela con red).

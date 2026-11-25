@@ -6,6 +6,7 @@
   const SISTEMAS_MULTI = (typeof module !== "undefined" && module.exports ? (() => { try { return require("./sistemas_multi.js"); } catch (e) { return null; } })() : global.PuntoSistemasMulti) || null;
   const SISTEMAS = (typeof module !== "undefined" && module.exports ? require("./sistemas.js") : global.PuntoSistemas) || null;
   const LOGICA = typeof module !== "undefined" && module.exports ? require("./logica.js") : global.PuntoLogica;
+  const VIDA = typeof module !== "undefined" && module.exports ? require("./vida.js") : global.PuntoVida;
   const TURING = typeof module !== "undefined" && module.exports ? require("./turing.js") : global.PuntoTuring;
   const GANADORES = (typeof module !== "undefined" && module.exports ? require("./ganadores.js") : global.PuntoGanadores) || [];
 
@@ -287,6 +288,28 @@
       "Las 8 combinaciones a la vez. Dos semisumadores y un OR, con desplazamientos y cruces para llevar cada señal a su " +
       "sitio: 11 etapas. Al final, la suma en el carril 0 y el acarreo en el carril 3. " + COD,
       todas(LOGICA.CIRCUITOS.sumador));
+  }
+
+  // ---------- Juego de la Vida de Conway (vida.js) ----------
+  if (VIDA) {
+    const nada = { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 };
+    const COMO = "Las reglas de Conway con las reglas normales del editor: 26 reglas 3×3 con simetría (135 variantes), modo " +
+      "paralelo «gana la primera». Nace: centro vacío y exactamente 3 vecinos (10 formas). Muere por soledad: 0 o 1 vecinos " +
+      "(3 formas). Muere por exceso: 4 vecinos • y el resto «cualquiera» (13 formas). Sobrevivir con 2 o 3 no necesita regla.";
+    const ejVida = (id, name, desc, w, h, wrap, cell, init) => EXAMPLES.push({
+      id: "vida-" + id, name: "Vida · " + name, desc: desc + " " + COMO + (wrap ? " Mundo toroidal." : " Sin toro: las celdas del borde no cambian (su ventana 3×3 se sale del mundo)."),
+      world: { w, h, wrap, lattice: nada }, mode: "par-prio", cell, speed: 0.25,
+      rules: () => VIDA.reglasVida(), init,
+    });
+    ejVida("planeadores", "planeador y nave ligera", "Un planeador (periodo 4, avanza en diagonal) y una nave ligera (periodo 4, avanza en horizontal).",
+      80, 50, true, 9, w => { VIDA.poner(w, VIDA.PATRONES.planeador, 5, 5); VIDA.poner(w, VIDA.PATRONES.nave, 10, 30); });
+    ejVida("pulsar", "púlsar", "Oscilador de periodo 3 con 48 células.", 21, 21, false, 18, w => VIDA.poner(w, VIDA.PATRONES.pulsar, 4, 4));
+    ejVida("canon", "cañón de Gosper", "El primer patrón de crecimiento infinito: dispara un planeador cada 30 generaciones.",
+      120, 80, false, 6, w => VIDA.poner(w, VIDA.PATRONES.canon, 4, 4));
+    ejVida("rpentomino", "R-pentominó", "Cinco células que tardan 1103 generaciones en estabilizarse y sueltan planeadores.",
+      180, 130, true, 4, w => VIDA.poner(w, VIDA.PATRONES.rpentomino, 89, 64));
+    ejVida("sopa", "sopa aleatoria", "Ruido al 35 % que se ordena en bloques, colmenas, parpadeadores y planeadores.",
+      100, 70, true, 6, w => VIDA.sopa(w, 0, 0, 100, 70, 11));
   }
 
   // ---------- Máquina de Turing universal (turing.js) ----------

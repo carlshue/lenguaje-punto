@@ -83,6 +83,24 @@ Cada línea es un estado, con la transición al leer 0 y al leer 1: escribe 0/1,
 
 ![La máquina universal tras ejecutar el busy beaver de 4 estados, con sus reglas](docs/capturas/turing-bb4.png)
 
+### Juego de la Vida de Conway
+
+Las reglas de Conway escritas con las reglas normales del editor, sin tocar el motor: **26 reglas 3×3** con simetría (135 variantes) en modo paralelo. Cada regla mira una ventana 3×3 y solo cambia la celda del centro:
+
+| Regla | Condición | Formas distintas |
+|---|---|---|
+| Nace | centro vacío y exactamente 3 vecinos (las 9 celdas especificadas) | 10 |
+| Muere por soledad | centro encendido y 0 o 1 vecinos (las 9 especificadas) | 3 |
+| Muere por exceso | centro encendido y 4 vecinos concretos encendidos (el resto «cualquiera») | 13 |
+
+Sobrevivir con 2 o 3 vecinos no necesita regla: no cambia nada. Las formas son las clases de vecindarios salvo giros y espejos, y la simetría «all» genera el resto. El modo paralelo lee el estado anterior y escribe después, que es justo la generación síncrona de Conway. Con «exceso» varias reglas pueden encajar en la misma celda; todas escriben lo mismo, así que se usa «paralelo: gana la primera» (en «descarta conflictos» se anularían). Los conflictos que muestra el contador son esos y no afectan al resultado.
+
+Ejemplos: planeador y nave ligera, púlsar, cañón de Gosper, R-pentominó y una sopa aleatoria.
+
+| Cañón de Gosper (240 generaciones) | Sopa aleatoria (150 generaciones) |
+|---|---|
+| ![Cañón de Gosper](docs/capturas/vida-canon.png) | ![Sopa](docs/capturas/vida-sopa.png) |
+
 ### Clásicos
 
 Gas de partículas, arena con gravedad y triángulo de Sierpinski (regla 90).
@@ -123,6 +141,7 @@ Con reglas que miran el bloque actual y el destino completos, no anclar sale gra
 | `examples.js` | Ejemplos de la galería |
 | `ganadores.js`, `sistemas.js`, `sistemas_multi.js` | Datos generados por los scripts de `busqueda/` |
 | `logica.js` | Puertas lógicas: codificación, reglas y circuitos |
+| `vida.js` | Juego de la Vida: reglas, patrones y referencia directa |
 | `turing.js` | Máquina de Turing universal: tabla fija, compilación a reglas y codificación de programas |
 | `servidor.py` | Servidor local sin caché, con la API de favoritos |
 | `busqueda/` | Búsqueda de codificaciones autolocalizables (Python + numpy) |
@@ -137,6 +156,7 @@ node test/test.js
 node test/autolocalizables.js
 node test/logica.js
 node test/turing.js
+node test/vida.js
 ```
 
-Comprueban que las hormigas reproducen paso a paso la hormiga clásica (autopista incluida), que las autolocalizables dan una sola coincidencia por paso sin anclaje, que Sierpinski coincide con la regla 90 y que los ejemplos conservativos conservan los •. La segunda tarda unos dos minutos. Las dos últimas comprueban todas las entradas de cada circuito y cada programa de la máquina universal contra su simulación directa, y que ninguna regla encaja fuera de su sitio. La de la máquina universal tarda unos 20 segundos.
+Comprueban que las hormigas reproducen paso a paso la hormiga clásica (autopista incluida), que las autolocalizables dan una sola coincidencia por paso sin anclaje, que Sierpinski coincide con la regla 90 y que los ejemplos conservativos conservan los •. La segunda tarda unos dos minutos. Las dos últimas comprueban todas las entradas de cada circuito y cada programa de la máquina universal contra su simulación directa, y que ninguna regla encaja fuera de su sitio. La de la máquina universal tarda unos 20 segundos. La del Juego de la Vida compara cada generación con una implementación directa de Conway.

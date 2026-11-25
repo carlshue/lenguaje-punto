@@ -334,6 +334,7 @@
     if (/^(hormiga|auto)/.test(e.id)) return "Hormigas";
     if (/^logica-/.test(e.id)) return "Puertas lógicas";
     if (/^turing-/.test(e.id)) return "Máquinas de Turing";
+    if (/^vida-/.test(e.id)) return "Juego de la Vida";
     if (/^ent-/.test(e.id)) return "Entropía · una regla";
     if (/^bb-/.test(e.id)) return "Busy beaver";
     if (/^multi-/.test(e.id)) return "Órdenes · varias reglas";
@@ -371,7 +372,7 @@
     }
     guardarFavs(); renderGaleria();
   }
-  const CATS = ["★ Favoritos", "Hormigas", "Puertas lógicas", "Máquinas de Turing", "Clásicos", "Entropía · una regla", "Busy beaver", "Órdenes · varias reglas"];
+  const CATS = ["★ Favoritos", "Hormigas", "Puertas lógicas", "Máquinas de Turing", "Juego de la Vida", "Clásicos", "Entropía · una regla", "Busy beaver", "Órdenes · varias reglas"];
   const porCat = c => c === "★ Favoritos" ? FAVS.map(favAEjemplo) : EXAMPLES.filter(e => categoria(e) === c);
   for (const c of CATS.slice(1)) {
     const L = porCat(c); if (!L.length) continue;
