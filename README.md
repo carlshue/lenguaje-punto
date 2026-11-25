@@ -1,6 +1,6 @@
 # • — editor de reglas
 
-Editor web para experimentar con el lenguaje •. El mundo es una grilla donde cada celda tiene un • o está vacía, y todo lo demás son reglas de la forma *disposición de celdas ~> disposición de celdas*.
+Editor web para experimentar con el lenguaje •. El mundo es una grilla donde cada celda es un píxel encendido (•) o apagado, y todo lo demás son reglas de la forma *disposición de celdas ~> disposición de celdas*.
 
 ![El editor con la hormiga de Langton de 6 celdas tras 10.500 pasos](docs/capturas/editor.png)
 
@@ -18,7 +18,7 @@ y entra en http://localhost:8765.
 
 ## Qué permite
 
-- Dibujar • en la grilla con el ratón.
+- Encender y apagar píxeles con el ratón.
 - Crear reglas con una condición («Si») y un resultado («Entonces»), de cualquier tamaño, con celdas «cualquiera».
 - Generar automáticamente rotaciones y espejos de una regla.
 - Anclar reglas a una red (rectangular o diagonal) cuando la posición de los bloques no se puede deducir de los propios •.
@@ -97,7 +97,7 @@ Sistemas encontrados por fuerza bruta en `busqueda/entropia/` y clasificados por
 - **Busy beaver**: para cada tamaño de regla, la que más entropía deja tras 128 pasos.
 - **Órdenes · varias reglas**: sistemas de 2 a 16 reglas que mezclan reglas productivas, consumidoras y movedoras.
 
-En rosa, las celdas que cambiaron en el último paso.
+En rosa, las celdas que cambiaron en el último paso: oscuro si se encendieron, claro si se apagaron.
 
 ![Galería filtrada por «sopa · alta → baja»](docs/capturas/galeria-entropia.png)
 

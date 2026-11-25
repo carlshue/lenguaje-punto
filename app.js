@@ -128,19 +128,18 @@
         ctx.strokeRect((mm.ox + x0) * c + .5, (mm.oy + y0) * c + .5, (x1 - x0 + 1) * c - 1, (y1 - y0 + 1) * c - 1);
       }
     }
-    // últimas escrituras
-    if (S.last && S.last.written && S.last.written.length < 5000) {
-      ctx.fillStyle = "rgba(214,51,108,.5)";
-      for (const i of S.last.written) ctx.fillRect((i % w.w) * c, ((i / w.w) | 0) * c, c, c);
-    }
-    // •
+    // píxeles encendidos
     ctx.fillStyle = "#1d1d1f";
-    const r = c * 0.36;
     for (let i = 0; i < w.cells.length; i++) {
       if (!w.cells[i]) continue;
-      const x = i % w.w, y = (i / w.w) | 0;
-      if (c < 5) ctx.fillRect(x * c, y * c, c, c);
-      else { ctx.beginPath(); ctx.arc(x * c + c / 2, y * c + c / 2, r, 0, 6.2832); ctx.fill(); }
+      ctx.fillRect((i % w.w) * c, ((i / w.w) | 0) * c, c, c);
+    }
+    // últimas escrituras: rosa encima (oscuro si se encendió, claro si se apagó)
+    if (S.last && S.last.written && S.last.written.length < 5000) {
+      for (const i of S.last.written) {
+        ctx.fillStyle = w.cells[i] ? "rgba(214,51,108,.75)" : "rgba(214,51,108,.3)";
+        ctx.fillRect((i % w.w) * c, ((i / w.w) | 0) * c, c, c);
+      }
     }
   }
 
