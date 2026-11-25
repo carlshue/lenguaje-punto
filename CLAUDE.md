@@ -46,6 +46,7 @@ Los antecedentes ya están hablados (Leibniz, Spencer-Brown *Laws of Form*, Linc
   - `sistemas.js` ← `busqueda/entropia/galeria.py` (45 sistemas de una regla, ids `ent-*` y `bb-*`).
   - `sistemas_multi.js` ← `busqueda/entropia/galeria_multi.py` (130 sistemas de varias reglas, ids `multi-*`).
   - `minimas.js` ← `busqueda/turing/exportar.js` (máquinas mínimas, ids `turing-min-*`).
+  - `universal_minima.js` ← `busqueda/turing/universal_exportar.js` (la universal del editor).
   - `favoritos.json`: lo escribe el editor.
 - `busqueda/` (autolocalización): `codigos.py` (modelo, comprobador exacto, familias, simetrías), `validar.py`, `fuerza_bruta.py`, `buscar.py` (F1/F2), `general.py`, `conservativas5.py`, `cribar.py`, `exportar.py`, `figuras.py` + `informe.py` → `informe_autolocalizacion.pdf`. Los JSON de resultados y `figs/` no se versionan.
 - `busqueda/turing/`: mínima expresión de la MT. `minima.js` (búsqueda exhaustiva), `verificar.js` (compila y ejecuta en el motor), `tabla.js` (tabla completa → `resultados.json`, no versionado), `exportar.js` (→ `../../minimas.js`).
@@ -117,6 +118,22 @@ LHS = bloque actual + bloque destino completos, 16 reglas. Mínimo de celdas por
 - Coste: el programa ocupa 2 + Σ por estado (6 + k0 + k1) columnas, con k0 y k1 los números de los estados siguientes; un paso simulado cuesta O(largo de la tira × estado siguiente) pasos universales. BB(4): 107 pasos simulados = 36.951 pasos universales.
 - Universal en el sentido de que ejecuta cualquier máquina de 2 símbolos con cualquier número de estados; la cinta es finita (la que quepa en el mundo).
 
+### Universal mínima (`busqueda/turing/universal_*.js`, hecha)
+
+- La misma tabla de la universal (`turing.js`, `DELTA`), compilada con el esquema mínimo: columna = 5 filas de símbolo + filas de estado; `T0` = código 0 (cinta en blanco = vacío, infinita a la derecha); al pasar a HALT el cabezal desaparece (23 estados con código).
+- `universal_min.js`: una regla por (estado, cubo de símbolos con la misma acción; cubos disjuntos para que nunca encajen 2 reglas); Si mínimo exacto como conjunto de impacto mínimo contra todas las columnas legales (y, sin anclaje, todas sus versiones desplazadas en vertical); los pares (estado, símbolo) sin transición son comodín. Asignación de códigos por recocido simulado.
+- Resultados (verificados en el motor con los 4 programas, `universal_verificar.js`):
+
+| Versión | Filas por casilla | Reglas | Celdas especificadas |
+|---|---|---|---|
+| Primera (marcas, `turing.js`) | 12 | 95 | 2185 |
+| Mínima anclada | 10 | 64 | 685 |
+| Mínima sin anclaje (en el editor) | 12 (2 de estado encima del símbolo, 5 debajo) | 65 | 924 |
+
+- Sin anclaje con 10 u 11 filas es imposible (siempre queda alguna regla sin Si válido); con 12 hace falta repartir el estado a los dos lados del símbolo: hace de marca arriba y abajo.
+- El coste está repartido entre los 23 estados; la mitad se la lleva el contador del estado siguiente (CL, SK, CL2, FN, CN, UN, CL3, CU, C0, CS). Bajar más exige rediseñar la máquina, no compilarla mejor.
+- `universal_exportar.js` → `../../universal_minima.js` (lo usan los ejemplos `turing-*` y el formulario de programas propios). Prueba en `test/turing.js`.
+
 ### Juego de la Vida (`vida.js`)
 
 - Hecho con el sistema de reglas tal cual (Carlos lo exigió: no se toca el motor). 26 reglas 3×3, `sym: "all"`, 135 variantes, modo `par-prio`.
@@ -141,7 +158,7 @@ LHS = bloque actual + bloque destino completos, 16 reglas. Mínimo de celdas por
 - Más filas → menos celdas de reglas, con rendimientos decrecientes (BB2: 35 → 27 → 26).
 - Las filas vacías de la vecina nunca ayudan en los óptimos.
 - Contra la cota de información (bits de la tabla): BB4 anclada 46 celdas vs 34,6 bits. Ojo: una celda no es un bit (el Si tiene 3 valores y su posición también informa).
-- La universal, para comparar: 95 reglas = 2185 celdas fijas + programa (BB4: 43 columnas × 12 = 516 celdas).
+- La universal, para comparar: ver la sección siguiente (924 celdas fijas sin anclaje + programa, BB4: 43 columnas × 12).
 - En el editor: `minimas.js` (de `exportar.js`), ids `turing-min-*`; prueba en `test/turing.js`.
 
 ## Ideas abiertas

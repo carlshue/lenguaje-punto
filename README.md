@@ -56,7 +56,7 @@ AND, OR, XOR, NAND, NOR, XNOR y NOT como reglas, y con ellas un semisumador y un
 
 ### Máquina de Turing universal
 
-Un único juego de **95 reglas fijas** ejecuta cualquier programa. El programa (la tabla de la máquina) y su cinta están escritos en • en el mundo, así que para cambiar de programa se cambian los •, no las reglas. Vienen cargados la suma unaria 3 + 2 y los busy beaver de 2, 3 y 4 estados. En la pestaña **Mundo** puedes escribir tu propio programa:
+Un único juego de **65 reglas fijas** (924 celdas especificadas) ejecuta cualquier programa. El programa (la tabla de la máquina) y su cinta están escritos en • en el mundo, así que para cambiar de programa se cambian los •, no las reglas. Vienen cargados la suma unaria 3 + 2 y los busy beaver de 2, 3 y 4 estados. En la pestaña **Mundo** puedes escribir tu propio programa:
 
 ```
 A: 1RB 1LB
@@ -65,14 +65,15 @@ B: 1LA 1RH
 
 Cada línea es un estado, con la transición al leer 0 y al leer 1: escribe 0/1, mueve L/R y estado siguiente. `H` = parar.
 
-- Cada columna es una casilla de la máquina universal. Lleva una marca •, el símbolo (5 bits), el estado del cabezal universal (5 bits) y otra marca •.
+- Cada columna es una casilla de la máquina universal, de 12 celdas: el símbolo (5 filas) y el estado del cabezal universal (7 filas: 2 encima y 5 debajo del símbolo; vacío = no está aquí). La casilla en blanco de la cinta es vacía, así que la cinta sigue por el mundo vacío.
+- Los códigos de cada símbolo y estado, y las celdas que mira cada regla, salen de una búsqueda que minimiza las celdas especificadas (`busqueda/turing/`). La primera versión necesitaba 95 reglas y 2.185 celdas.
 - A la izquierda está el programa: un bloque por estado, con la transición para 0 y para 1, y el número del estado siguiente en unario. A la derecha, la cinta simulada.
 - En cada paso simulado, el cabezal universal hace lo siguiente:
   1. Lee la casilla.
   2. Busca el bloque del estado actual y la transición que toca.
   3. Escribe en la cinta y mueve el cabezal simulado.
   4. Cuenta las N del estado siguiente para marcar su bloque.
-- Sin anclaje: en cada paso hay exactamente una coincidencia, y al llegar a HALT no queda ninguna.
+- Sin anclaje: en cada paso hay exactamente una coincidencia, y al parar el cabezal desaparece. Con anclaje bastarían 10 filas por casilla y 685 celdas.
 
 | Programa | Pasos simulados | Pasos de la universal |
 |---|---|---|

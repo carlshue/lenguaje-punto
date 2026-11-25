@@ -32,8 +32,25 @@ for (const m of T.PROGRAMAS) {
   const prog = fin.simbolos.slice(0, inicioCinta).join(" "), limpio = simbolos.slice(0, inicioCinta).join(" ").replace("B*", "B");
   check(`${m.id}: el programa queda sin marcas`, prog === limpio);
 }
-// Máquinas en su mínima expresión (minimas.js): mismas comprobaciones, reglas ya compiladas
 const { EXAMPLES } = require("../examples.js");
+
+// La universal del editor (universal_minima.js: códigos y reglas mínimos, sin anclaje)
+for (const m of T.PROGRAMAS) {
+  const ex = EXAMPLES.find(e => e.id === "turing-" + m.id), U = ex.universal;
+  if (!U) { check(`${m.id}: falta universal_minima.js`, false); continue; }
+  const world = P.newWorld(ex.world.w, ex.world.h); ex.init(world);
+  const vv = P.compileRules(ex.rules());
+  let pasos = 0, unica = true;
+  for (;;) { const ms = P.findMatches(world, vv, 2); if (!ms.length) break; if (ms.length > 1) unica = false; P.step(world, vv, "seq"); pasos++; }
+  const inv = Object.fromEntries(Object.entries(U.codS).map(([s, c]) => [c, s]));
+  const leidos = [];
+  for (let x = 0; x < U.n; x++) { let c = 0; U.filaS.forEach((f, b) => { c |= world.cells[(U.y0 + f) * world.w + x] << b; }); leidos.push(inv[c] || "?"); }
+  const c = T.cintaDe(leidos, U.inicioCinta), ref = T.simular(m.tabla, m), dir = T.universalDirecta(T.tira(m).simbolos);
+  check(`universal mínima (${vv.length} reglas, ${U.celdas} celdas, sin anclaje) con ${m.id}: 1 coincidencia por paso, ${pasos} pasos, cinta ${c.cinta}`,
+    unica && pasos === dir.pasos && c.cinta === ref.cinta);
+}
+
+// Máquinas en su mínima expresión (minimas.js): mismas comprobaciones, reglas ya compiladas
 for (const m of require("../minimas.js")) {
   const ex = EXAMPLES.find(e => e.id === m.id);
   const world = P.newWorld(ex.world.w, ex.world.h); Object.assign(world.lattice, ex.world.lattice); ex.init(world);

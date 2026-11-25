@@ -8,6 +8,7 @@
   const LOGICA = typeof module !== "undefined" && module.exports ? require("./logica.js") : global.PuntoLogica;
   const VIDA = typeof module !== "undefined" && module.exports ? require("./vida.js") : global.PuntoVida;
   const MINIMAS = (typeof module !== "undefined" && module.exports ? (() => { try { return require("./minimas.js"); } catch (e) { return null; } })() : global.PuntoMinimas) || [];
+  const UMIN = (typeof module !== "undefined" && module.exports ? (() => { try { return require("./universal_minima.js"); } catch (e) { return null; } })() : global.PuntoUniversalMinima) || null;
   const TURING = typeof module !== "undefined" && module.exports ? require("./turing.js") : global.PuntoTuring;
   const GANADORES = (typeof module !== "undefined" && module.exports ? require("./ganadores.js") : global.PuntoGanadores) || [];
 
@@ -337,19 +338,34 @@
   const tablaTexto = tabla => Object.entries(tabla).map(([q, t]) => `${q}: ${t[0] || "-"} ${t[1] || "-"}`).join("\n");
   function ejemploTuring(m) {
     const { simbolos, inicioCinta } = TURING.tira(m);
-    const n = TURING.reglasUniversales().length;
+    const U = UMIN;
+    if (!U) {   // sin universal_minima.js: la versión con marcas de turing.js
+      const n = TURING.reglasUniversales().length;
+      return {
+        id: "turing-" + m.id, name: "Turing universal · " + m.nombre,
+        desc: `${m.desc} Las mismas ${n} reglas para todos los programas (versión con marcas).`,
+        world: { w: simbolos.length + 2, h: TURING.ALTO + 2, wrap: false, lattice: { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
+        mode: "seq", cell: 12, speed: 10, rules: () => TURING.reglasUniversales(), init(world) { TURING.pintar(world, simbolos, 1, 1); }, programa: m,
+      };
+    }
+    const ancho = simbolos.length + 24, y0 = U.h;
     return {
       id: "turing-" + m.id, name: "Turing universal · " + m.nombre,
       desc: `${m.desc} Programa: ${tablaTexto(m.tabla).replace(/\n/g, "; ")} (escribe, mueve y estado siguiente al leer 0 y al leer 1). ` +
-        `Las mismas ${n} reglas para todos los programas: el programa y su cinta están en los •. Cada columna es una casilla ` +
-        `de la máquina universal: marca •, símbolo (5 bits), estado del cabezal universal (5 bits) y marca •. A la izquierda, ` +
-        `el programa (${inicioCinta} columnas: un bloque por estado; el número del estado siguiente va en unario); a la derecha, la ` +
-        "cinta simulada. Sin anclaje: en cada paso hay exactamente una coincidencia, y al llegar a HALT no queda ninguna.",
-      world: { w: simbolos.length + 2, h: TURING.ALTO + 2, wrap: false, lattice: { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
-      mode: "seq", cell: 12, speed: 10,
-      rules: () => TURING.reglasUniversales(),
-      init(world) { TURING.pintar(world, simbolos, 1, 1); },
-      programa: m,
+        `Las mismas ${U.reglas.length} reglas (${U.celdas} celdas especificadas) para todos los programas: el programa y su cinta están en los •. ` +
+        `Cada columna es una casilla de la máquina universal de ${U.h} celdas: el símbolo en 5 filas y el estado del cabezal universal en 7 ` +
+        "(2 encima y 5 debajo del símbolo; vacío = sin cabezal). A la izquierda, el programa " +
+        `(${inicioCinta} columnas: un bloque por estado; el número del estado siguiente va en unario); a la derecha, la cinta simulada. ` +
+        "La casilla en blanco de la cinta tiene código vacío, así que la cinta sigue en el mundo vacío. Códigos y reglas mínimos, " +
+        "encontrados por búsqueda (busqueda/turing/). Sin anclaje: en cada paso hay exactamente una coincidencia, y al parar el cabezal desaparece.",
+      world: { w: ancho, h: 3 * U.h, wrap: false, lattice: { type: "none", px: 3, py: 2, ox: 0, oy: 0, m: 2, n: 5, k: 0 } },
+      mode: "seq", cell: 10, speed: 10,
+      rules: () => U.reglas.map(r => Object.assign(P.newRule(r.w, r.h, r.name), JSON.parse(JSON.stringify(r)), { enabled: true, sym: "none", anchored: false })),
+      init(world) {
+        simbolos.forEach((s, x) => U.filaS.forEach((f, b) => { if ((U.codS[s] >> b) & 1) set(world, x, y0 + f); }));
+        U.filaQ.forEach((f, b) => { if ((U.codQ.READ >> b) & 1) set(world, 0, y0 + f); });
+      },
+      programa: m, universal: { ...U, y0, inicioCinta, n: simbolos.length },
     };
   }
   /** «A: 1RB 1LB» por línea (transición al leer 0 y al leer 1; H = parar, - = no definida). */
