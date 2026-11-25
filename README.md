@@ -83,6 +83,18 @@ Cada línea es un estado, con la transición al leer 0 y al leer 1: escribe 0/1,
 
 ![La máquina universal tras ejecutar el busy beaver de 4 estados, con sus reglas](docs/capturas/turing-bb4.png)
 
+### Máquinas de Turing en su mínima expresión
+
+Una búsqueda exhaustiva en `busqueda/turing/` encuentra la forma más pequeña de escribir una máquina concreta en •: cuántas celdas por casilla y cuántas celdas especificadas en sus reglas. La cinta en blanco es el mundo vacío (infinita gratis) y el cabezal desaparece al parar.
+
+| Máquina | Anclada | Sin anclaje | Versión anterior |
+|---|---|---|---|
+| Busy beaver 2 | 3 celdas por casilla, 17 celdas de reglas | 5 por casilla, 27 | 5 por casilla, 55 |
+| Busy beaver 3 | 3, 34 | 5, 49 | 6, 84 |
+| Busy beaver 4 | 4, 46 | 5, 77 | 6, 114 |
+
+Anclada se alcanza la cota teórica ⌈log₂(símbolos · (estados + 1))⌉. Sin anclaje no hay ninguna codificación que se autolocalice con esa altura: hace falta al menos una fila más, que la búsqueda usa como «marca».
+
 ### Juego de la Vida de Conway
 
 Las reglas de Conway escritas con las reglas normales del editor, sin tocar el motor: **26 reglas 3×3** con simetría (135 variantes) en modo paralelo. Cada regla mira una ventana 3×3 y solo cambia la celda del centro:

@@ -32,5 +32,18 @@ for (const m of T.PROGRAMAS) {
   const prog = fin.simbolos.slice(0, inicioCinta).join(" "), limpio = simbolos.slice(0, inicioCinta).join(" ").replace("B*", "B");
   check(`${m.id}: el programa queda sin marcas`, prog === limpio);
 }
+// Máquinas en su mínima expresión (minimas.js): mismas comprobaciones, reglas ya compiladas
+const { EXAMPLES } = require("../examples.js");
+for (const m of require("../minimas.js")) {
+  const ex = EXAMPLES.find(e => e.id === m.id);
+  const world = P.newWorld(ex.world.w, ex.world.h); Object.assign(world.lattice, ex.world.lattice); ex.init(world);
+  const vv = P.compileRules(ex.rules());
+  let pasos = 0, unica = true;
+  for (;;) { const n = P.findMatches(world, vv).length; if (!n) break; if (n !== 1) unica = false; P.step(world, vv, "seq"); pasos++; }
+  let cinta = ""; for (let x = 0; x < world.w; x++) cinta += world.cells[(m.h + m.filaSimbolo) * world.w + x] ? "1" : "0";
+  const ref = T.simular(m.tabla, { cinta: "", cabeza: 30, largo: world.w });
+  check(`${m.id} (${m.h} celdas por casilla, ${m.celdas} celdas de reglas${m.anclada ? ", anclada" : ""}): 1 coincidencia por paso, ${ref.pasos} pasos y cinta idéntica`,
+    unica && pasos === ref.pasos && cinta === ref.cinta);
+}
 console.log(ok ? "\nTODO OK" : "\nHAY FALLOS");
 process.exit(ok ? 0 : 1);

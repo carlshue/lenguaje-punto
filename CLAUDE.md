@@ -45,8 +45,10 @@ Los antecedentes ya están hablados (Leibniz, Spencer-Brown *Laws of Form*, Linc
   - `ganadores.js` ← `busqueda/exportar.py`.
   - `sistemas.js` ← `busqueda/entropia/galeria.py` (45 sistemas de una regla, ids `ent-*` y `bb-*`).
   - `sistemas_multi.js` ← `busqueda/entropia/galeria_multi.py` (130 sistemas de varias reglas, ids `multi-*`).
+  - `minimas.js` ← `busqueda/turing/exportar.js` (máquinas mínimas, ids `turing-min-*`).
   - `favoritos.json`: lo escribe el editor.
 - `busqueda/` (autolocalización): `codigos.py` (modelo, comprobador exacto, familias, simetrías), `validar.py`, `fuerza_bruta.py`, `buscar.py` (F1/F2), `general.py`, `conservativas5.py`, `cribar.py`, `exportar.py`, `figuras.py` + `informe.py` → `informe_autolocalizacion.pdf`. Los JSON de resultados y `figs/` no se versionan.
+- `busqueda/turing/`: mínima expresión de la MT. `minima.js` (búsqueda exhaustiva), `verificar.js` (compila y ejecuta en el motor), `tabla.js` (tabla completa → `resultados.json`, no versionado), `exportar.js` (→ `../../minimas.js`).
 - `busqueda/hormiga/`: hormiga con red y mínimo de reglas (`minima.js`) y hormiga sin red (`sin_red.py` F1, `sin_red2.py` F2, `separable.js` verificación en el motor).
 - `busqueda/entropia/`: exploración de sistemas por entropía.
   - `reglas.py`: reglas de hasta 3×3, simetrías y forma canónica (quita escrituras nulas, normaliza por traslación, mínimo sobre las 8 transformaciones).
@@ -123,6 +125,25 @@ LHS = bloque actual + bloque destino completos, 16 reglas. Mínimo de celdas por
 - Sin toro, las celdas del borde no cambian (su ventana 3×3 se sale y no encaja). La referencia de la prueba usa la misma convención.
 - Comprobado generación a generación contra Conway directo: sopas en toro y con bordes (300 generaciones), planeador, púlsar (periodo 3) y cañón de Gosper (+5 células cada 30 generaciones).
 
+### Mínima expresión de la máquina de Turing (`busqueda/turing/`, hecha)
+
+- Compilación directa, una regla por transición. Casilla = columna de h celdas: una fila de símbolo (vacía = 0, así la cinta en blanco es el mundo vacío y es infinita gratis) y h-1 filas de estado (vacío = sin cabezal). Parar = el cabezal desaparece.
+- Métrica: celdas especificadas = celdas del Si que no son «cualquiera» + celdas del Entonces que escriben.
+- Búsqueda exhaustiva (`minima.js`): todas las filas de símbolo, todos los conjuntos de códigos, el Si mínimo de cada regla (incluidas filas vacías de la vecina) y el mejor reparto de códigos. Corrección exacta: a desplazamiento vertical 0 solo encaja la columna del cabezal en (q, s); a k ≠ 0 ninguna pareja de columnas legales. Verificado en el motor (`verificar.js`, `tabla.js`).
+
+| Máquina | Anclada (h = cota ⌈log2(2(n+1))⌉) | Sin anclaje, h mín. | h+1 | h+2 | Versión antigua con marcas | Cota de información de la tabla |
+|---|---|---|---|---|---|---|
+| BB(2) | 17 celdas, h = 3 | 35, h = 4 | 27, h = 5 | 26, h = 6 | 55, h = 5 | 14,3 bits |
+| BB(3) | 34, h = 3 | 49, h = 5 | 42, h = 6 | | 84, h = 6 | 24 bits |
+| BB(4) | 46, h = 4 | 77, h = 5 | 68, h = 6 | | 114, h = 6 | 34,6 bits |
+
+- **Con la altura teórica mínima, ninguna codificación se autolocaliza** (demostrado por exhaustividad para las tres). Al contrario que la hormiga, aquí autolocalizarse cuesta: +1 fila (BB2, BB4) o +2 (BB3), y ~1,5-2× celdas de reglas. Motivo: en la hormiga la regla veía el bloque destino completo; aquí la vecina es cinta en blanco (vacío), no aporta contexto, y fuera de la tira todo está vacío. La búsqueda redescubre una «marca»: una fila de estado encendida en todos los códigos de cabezal.
+- Más filas → menos celdas de reglas, con rendimientos decrecientes (BB2: 35 → 27 → 26).
+- Las filas vacías de la vecina nunca ayudan en los óptimos.
+- Contra la cota de información (bits de la tabla): BB4 anclada 46 celdas vs 34,6 bits. Ojo: una celda no es un bit (el Si tiene 3 valores y su posición también informa).
+- La universal, para comparar: 95 reglas = 2185 celdas fijas + programa (BB4: 43 columnas × 12 = 516 celdas).
+- En el editor: `minimas.js` (de `exportar.js`), ids `turing-min-*`; prueba en `test/turing.js`.
+
 ## Ideas abiertas
 
 - Reglas mínimas: permitir «cualquiera» y minimizar celdas especificadas manteniendo la no ambigüedad. Probablemente ahí sí cuesta no anclar.
@@ -130,6 +151,7 @@ LHS = bloque actual + bloque destino completos, 16 reglas. Mínimo de celdas por
 - Teoría: Golomb, Gordon y Welch; sincronización de bloques en autómatas celulares.
 - Otros sistemas: regla 110. Vida: ¿cuántas celdas especificadas como mínimo? ¿Se puede sin modo paralelo (con reglas secuenciales y fases)? ¿Y una versión conservativa?
 - Lógica: medir el coste por puerta (celdas por regla, reglas por puerta), y cablear sin etapas de PASO (hoy cada señal necesita un componente en cada etapa).
+- Mínima MT: ¿se baja la cota con códigos no separables, varias reglas por transición o una vecina con contexto (p. ej. cinta con marca)? ¿Cuánto cuesta la universal con este esquema y programa en binario?
 - Universal: reducir reglas y estados (¿cuál es la universal más pequeña en celdas • totales?), cinta que crece sola, más de 2 símbolos, y que la universal se ejecute a sí misma.
 - Teselados no rectangulares (el comprobador ya acepta cualquier prototesela con red).
 - Estudiar los favoritos de entropía: qué rasgos comparten.

@@ -7,6 +7,7 @@
   const SISTEMAS = (typeof module !== "undefined" && module.exports ? require("./sistemas.js") : global.PuntoSistemas) || null;
   const LOGICA = typeof module !== "undefined" && module.exports ? require("./logica.js") : global.PuntoLogica;
   const VIDA = typeof module !== "undefined" && module.exports ? require("./vida.js") : global.PuntoVida;
+  const MINIMAS = (typeof module !== "undefined" && module.exports ? (() => { try { return require("./minimas.js"); } catch (e) { return null; } })() : global.PuntoMinimas) || [];
   const TURING = typeof module !== "undefined" && module.exports ? require("./turing.js") : global.PuntoTuring;
   const GANADORES = (typeof module !== "undefined" && module.exports ? require("./ganadores.js") : global.PuntoGanadores) || [];
 
@@ -310,6 +311,25 @@
       180, 130, true, 4, w => VIDA.poner(w, VIDA.PATRONES.rpentomino, 89, 64));
     ejVida("sopa", "sopa aleatoria", "Ruido al 35 % que se ordena en bloques, colmenas, parpadeadores y planeadores.",
       100, 70, true, 6, w => VIDA.sopa(w, 0, 0, 100, 70, 11));
+  }
+
+  // ---------- Máquinas de Turing en su mínima expresión (minimas.js, de busqueda/turing/) ----------
+  for (const m of MINIMAS) {
+    const codigos = Object.entries(m.codigos).map(([q, c]) => `${q} = ${c}`).join(", ");
+    EXAMPLES.push({
+      id: m.id, name: `Turing mínima · ${m.nombre}${m.anclada ? " anclada" : ""} (${m.h} celdas por casilla, ${m.celdas} celdas de reglas)`,
+      desc: `La mínima expresión encontrada por búsqueda exhaustiva: ${m.reglas.length} reglas (una por transición) con ${m.celdas} celdas ` +
+        `especificadas en total. Cada casilla de la cinta es una columna de ${m.h} celdas: la fila ${m.filaSimbolo} es el símbolo ` +
+        `y el resto, el estado del cabezal (de arriba abajo: ${codigos}). La cinta en blanco es el mundo vacío, así que es ` +
+        "infinita sin coste. Al parar, el cabezal desaparece. " +
+        (m.anclada ? "Anclada a filas de " + m.h + ": la altura es la cota teórica ⌈log2(2·(estados+1))⌉, pero dónde empieza cada casilla lo dice la red."
+          : "Sin anclaje: con la altura mínima teórica ninguna codificación se autolocaliza; hace falta una fila más, y la búsqueda " +
+            "redescubre una «marca»: una fila de estado encendida en todos los códigos."),
+      world: { w: 60, h: 3 * m.h, wrap: false, lattice: { type: "rect", px: 1, py: m.h, ox: 0, oy: m.h, m: 2, n: 5, k: 0 } },
+      mode: "seq", cell: 14, speed: 0.1,
+      rules: () => m.reglas.map(r => Object.assign(P.newRule(r.w, r.h, r.name), JSON.parse(JSON.stringify(r)), { enabled: true, sym: "none" })),
+      init(world) { for (let y = 0; y < m.h; y++) if ((m.cabezal >> y) & 1) set(world, 30, m.h + y); },
+    });
   }
 
   // ---------- Máquina de Turing universal (turing.js) ----------
